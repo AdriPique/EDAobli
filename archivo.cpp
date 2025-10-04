@@ -7,18 +7,14 @@
 #include "archivo.h"
 #include <string.h>
 #include <iostream>
+#include "version.h"
 
 using namespace std;
 
-
+//Este es solo la raíz.
 struct nodo_archivo{
-	char * nombre;
-/* aquí deben figurar los campos que usted considere necesarios para manipular el archivo con sus versiones */
-
-	// ej: version v;     entrega 1
-	//     versiones vs;  entrega 2
-	
-	// estos deben ser implementados en modulos que deben integrarse con este
+	char* nombre;
+	version versiones;
 };
 
 
@@ -29,7 +25,7 @@ Archivo CrearArchivo(char * nombre){
 	Archivo a = new (nodo_archivo);
 	a->nombre = new(char[MAX_NOMBRE]);
 	strcpy(a->nombre, nombre);
-	// a->v = CrearVersion();  // a->vs = CrearVersiones();
+	// a->versiones = CrearVersion();  // a->vs = CrearVersiones();
 	
 	return a;
 }
@@ -67,6 +63,8 @@ TipoRet BorrarVersion(Archivo &a, char * version){
 TipoRet MostrarVersiones(Archivo a){
 // FORMATO: En primer lugar muestra el nombre del archivo. Después de una línea en blanco lista todos las versiones del archivo
 // ordenadas por nivel jerárquico e indentadas según muestra el ejemplo publicado en la letra (cada nivel está indentado por un tabulador).
+	cout << a->nombre << endl << endl;
+
 
 	return NO_IMPLEMENTADA;
 }
