@@ -1,16 +1,23 @@
 #include "archivo.h"
 #include "version.h"
+#include "definiciones.h"
 #include <iostream>
 using namespace std;
 
 
-void imprimir_versiones(version v){
-    cout << endl;
-    for(int i=v->nivel; i>0; i--){
-        cout << "   ";
+void imprimir_versiones(Archivo a){
+    if(a->versiones==NULL){
+        cout << a->nombre << endl;
+        cout << "No hay versiones vreadas" << endl;
+    } else{
+        version aux= a->versiones;
+        cout << endl;
+        for(int i=aux->nivel; i>0; i--){
+            cout << "   ";
+        }
+        cout << aux-> nombre_en_int[i];
+        
     }
-    cout << v-> 
-    if(v->)
 }
 
 
