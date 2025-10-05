@@ -1,0 +1,1 @@
+typedef struct nodo_texto* texto;

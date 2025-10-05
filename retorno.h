@@ -1,0 +1,1 @@
+typedef enum _retorno TipoRet;
