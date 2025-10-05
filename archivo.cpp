@@ -9,6 +9,7 @@
 #include <iostream>
 #include "version.h"
 #include "texto.h"
+#include "retorno.h"
 
 using namespace std;
 
@@ -26,6 +27,7 @@ Archivo CrearArchivo(char * nombre){
 	Archivo a = new (nodo_archivo);
 	a->nombre = new(char[MAX_NOMBRE]);
 	strcpy(a->nombre, nombre);
+	
 	a->versiones = CrearVersion(a, "1", );  
 	
 	return a;
