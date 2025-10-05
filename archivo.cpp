@@ -8,6 +8,7 @@
 #include <string.h>
 #include <iostream>
 #include "version.h"
+#include "texto.h"
 
 using namespace std;
 
@@ -76,6 +77,7 @@ TipoRet InsertarLinea(Archivo &a, char * version, char * linea, unsigned int nro
 // No se puede insertar una línea en una versión que tenga subversiones.
 // Notar que el crear un archivo, éste no es editable hasta que no se crea al menos una versión del mismo. Sólo las versiones de un archivo son editables (se pueden insertar o suprimir líneas), siempre que no tengan subversiones creadas.
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
+
 
 	return NO_IMPLEMENTADA;
 }
