@@ -25,7 +25,7 @@ Archivo CrearArchivo(char * nombre){
 	Archivo a = new (nodo_archivo);
 	a->nombre = new(char[MAX_NOMBRE]);
 	strcpy(a->nombre, nombre);
-	// a->versiones = CrearVersion();  // a->vs = CrearVersiones();
+	a->versiones = CrearVersion(a, "1", );  
 	
 	return a;
 }
@@ -40,7 +40,7 @@ TipoRet BorrarArchivo(Archivo &a){
 }
 
 
-TipoRet CrearVersion(Archivo &a, char * version, char * error){
+TipoRet CrearVersion(Archivo &a, char* version, char* error){
 // Crea una nueva versión del archivo si la versión especificada cumple con las siguientes reglas:
 // - El padre de la nueva versión a crear ya debe existir. Por ejemplo, si creo la versión 2.15.1, la versión 2.15 ya debe existir.
 // Las versiones del primer nivel no siguen esta regla, ya que no tienen versión padre.
