@@ -1,7 +1,9 @@
 #include "archivo.h"
 #include "version.h"
 #include "definiciones.h"
+#include "funcion_aux.h"
 #include <iostream>
+
 using namespace std;
 
 
@@ -18,6 +20,24 @@ void imprimir_versiones(Archivo a){
         cout << aux-> nombre_en_int[i];
         
     }
+}
+
+void liberarTexto(texto t){
+    while(t != NULL){
+        texto temp = t;
+        t = t -> sig_linea;
+        delete [] temp->linea;
+        delete temp;
+    }
+
+}
+void liberarVersiones(version v){
+    if (v == NULL) return;
+        liberarVersiones(v->ph);
+        liberarVersiones(v->sh);
+        if (v->linea != NULL)
+        liberarTexto(*(v->linea));
+        delete v;
 }
 
 

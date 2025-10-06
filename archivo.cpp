@@ -7,6 +7,7 @@
 #include "archivo.h"
 #include <string.h>
 #include <iostream>
+#include "funcion_aux.h"
 #include "version.h"
 
 using namespace std;
@@ -35,8 +36,15 @@ TipoRet BorrarArchivo(Archivo &a){
 // Elimina toda la memoria utilizada por el archivo y asigna NULL al puntero a.
 // Se asume como precondición que a referencia a un archivo (en particular a es distinto a NULL).
 // Esta operación se ejecuta al final de una sesión de trabajo con un archivo.
-	
-	return NO_IMPLEMENTADA;
+	if ( a==NULL ){
+		return OK;
+	}else{
+		delete[] a->nombre;
+		liberarVersiones(a->Versiones);
+		delete a;
+		a = NULL;
+		return OK;
+	}
 }
 
 
