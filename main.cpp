@@ -9,7 +9,7 @@
 #include <stdio.h> 
 #include <iostream>
 #include <stdlib.h>
-
+#include "texto.h"
 using namespace std;
 
 
