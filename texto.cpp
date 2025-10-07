@@ -6,4 +6,5 @@ struct nodo_texto{
     int num_linea;
     char* linea;
     texto sig_linea;
+    texto ant_linea;
 };

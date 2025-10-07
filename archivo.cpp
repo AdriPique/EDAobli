@@ -4,30 +4,32 @@
 // archivo.c
 // Modulo de implementacion de archivo.
 
+#include "texto.h"
 #include "archivo.h"
 #include <string.h>
 #include <iostream>
-#include "funcion_aux.h"
-#include "version.h"
+
+
 
 using namespace std;
 
 //Este es solo la raíz.
 struct nodo_archivo{
-	char* nombre;
-	version versiones;
+
+    Archivo ph;
+    Archivo sh;
+    char* nombre;
+    int nivel;      //Para la referencia cuando tratemos el nombre como un array de enteros,opcional tho.
+    int nombre_numerico[100];
+    texto* linea;
 };
 
 
+
 Archivo CrearArchivo(char * nombre){
-// Crea el archivo con el nombre especificado y lo inicializa sin contenido (vacío).
-// El archivo creado es retornado.
-// Esta operación se ejecuta al inicio de una sesión de trabajo con un archivo.
 	Archivo a = new (nodo_archivo);
 	a->nombre = new(char[MAX_NOMBRE]);
 	strcpy(a->nombre, nombre);
-	// a->versiones = CrearVersion();  // a->vs = CrearVersiones();
-	
 	return a;
 }
 
@@ -48,7 +50,7 @@ TipoRet BorrarArchivo(Archivo &a){
 }
 
 
-TipoRet CrearVersion(Archivo &a, char * version, char * error){
+TipoRet CrearVersion(Archivo &a, char* version, char* error){
 // Crea una nueva versión del archivo si la versión especificada cumple con las siguientes reglas:
 // - El padre de la nueva versión a crear ya debe existir. Por ejemplo, si creo la versión 2.15.1, la versión 2.15 ya debe existir.
 // Las versiones del primer nivel no siguen esta regla, ya que no tienen versión padre.
@@ -85,6 +87,24 @@ TipoRet InsertarLinea(Archivo &a, char * version, char * linea, unsigned int nro
 // Notar que el crear un archivo, éste no es editable hasta que no se crea al menos una versión del mismo. Sólo las versiones de un archivo son editables (se pueden insertar o suprimir líneas), siempre que no tengan subversiones creadas.
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
 
+
+
+
+	if(a->ph==NULL){
+		cout << "Archivo creado sin versiones para poder usar " << endl;
+		return ERROR;
+	}
+	char* verSirve = strtok(version,".");
+	char* myptr =strtok(a->nombre,".");
+	while(verSirve != NULL && myptr!=NULL){
+		if (strcmp(verSirve,myptr)==0){
+			char* verSirve = strtok(version,NULL);
+			char* myptr =strtok(a->nombre,NULL);
+			return true;
+		}
+	}
+
+
 	return NO_IMPLEMENTADA;
 }
 
@@ -100,7 +120,15 @@ TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * er
 
 TipoRet MostrarTexto(Archivo a, char * version){
 // Esta función muestra el texto completo de la version, teniendo en cuenta los cambios realizados en dicha versión y en las versiones ancestras, de la cual ella depende.
-
+	cout << a->nombre << " - " << version << endl << endl;
+	if(a->ph!=NULL){
+		texto texto= a->linea;
+		while(texto!=NULL){
+			cout << texto->num_linea << texto->linea << endl;
+		
+		}
+		
+	}
 	return NO_IMPLEMENTADA;
 }
 
