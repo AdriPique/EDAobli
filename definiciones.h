@@ -8,7 +8,9 @@
 // Modulo para definiciones generales del proyecto como constantes, etc.
 
 enum _retorno{
-	OK, ERROR, NO_IMPLEMENTADA
+	OK,
+	ERROR,
+	NO_IMPLEMENTADA
 };
 
 typedef enum _retorno TipoRet;
