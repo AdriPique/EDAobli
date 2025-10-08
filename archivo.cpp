@@ -101,14 +101,21 @@ TipoRet InsertarLinea(Archivo &a, char* version, char* linea, unsigned int nroLi
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
 	Archivo aux=version_existe(a, version);
 	if(aux==NULL){
-		cout << "La versión estipulada no existe" << endl;
+		error = new char;
+		*error="La versión estipulada no existe";
+		cout << *error << endl;
 		return ERROR;
 	} else if(aux->ph!=NULL){
-		cout << "La version a modificar tiene subversiones. No se puede insertar la línea." << endl;
+		error= new char;
+		error = "La version a modificar tiene subversiones. No se puede insertar la línea."
+		cout << *error << endl;
 		return ERROR;
 	} else {
 		if(contador_lineas(aux->linea)+1 < nroLinea){
-			cout << "Número de línea no válido" << endl;
+			error= new char;
+			error = "Número de línea no válido."
+			cout << *error << endl;
+			cout << error << endl;
 			return ERROR;
 		} else {
 			
@@ -137,7 +144,9 @@ TipoRet MostrarTexto(Archivo a, char * version){
 // Esta función muestra el texto completo de la version, teniendo en cuenta los cambios realizados en dicha versión y en las versiones ancestras, de la cual ella depende.
 	Archivo aux=version_existe(a, version);
 	if(aux==NULL){						
-		cout << "La versión especificada no existe" << endl;
+		char* error= new char;
+		*error= "La versión especificada no existe";
+		cout << *error << endl;
 		return ERROR;
 	} else {
 		recorrer_e_imprimir_texto(aux->linea, a->nombre, aux->nombre);
@@ -164,6 +173,7 @@ TipoRet VersionIndependiente(Archivo &a, char * version){
 
 	return NO_IMPLEMENTADA;
 }
+
 
 
 
