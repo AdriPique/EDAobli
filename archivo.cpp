@@ -13,7 +13,6 @@
 
 using namespace std;
 
-//Este es solo la raíz.
 struct nodo_archivo{
 
     Archivo ph;
@@ -165,5 +164,6 @@ TipoRet VersionIndependiente(Archivo &a, char * version){
 
 	return NO_IMPLEMENTADA;
 }
+
 
 
