@@ -8,7 +8,7 @@
 // Modulo de especificacion de archivo.
 
 #include "definiciones.h"
-#include "version.h"
+
 typedef struct nodo_archivo * Archivo;
 
 Archivo CrearArchivo(char * nombre);

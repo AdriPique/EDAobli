@@ -4,6 +4,7 @@
 // archivo.c
 // Modulo de implementacion de archivo.
 
+#include "funcion_aux.h"
 #include "texto.h"
 #include "archivo.h"
 #include <string.h>
@@ -93,16 +94,21 @@ TipoRet InsertarLinea(Archivo &a, char * version, char * linea, unsigned int nro
 	if(a->ph==NULL){
 		cout << "Archivo creado sin versiones para poder usar " << endl;
 		return ERROR;
-	}
-	char* verSirve = strtok(version,".");
-	char* myptr =strtok(a->nombre,".");
-	while(verSirve != NULL && myptr!=NULL){
-		if (strcmp(verSirve,myptr)==0){
-			char* verSirve = strtok(version,NULL);
-			char* myptr =strtok(a->nombre,NULL);
-			return true;
+	}else{
+		
+		InsertarLinea(a->ph,version,linea,nroLinea, error);
+			if(strcmp(version,a->nombre)==0){
+				if(strcmp(nroLinea,))
+				return OK;
+			}else{
+		
+		
+			InsertarLinea(a->sh,version,linea,nroLinea,error);
+
+			return;
 		}
 	}
+	
 
 
 	return NO_IMPLEMENTADA;
