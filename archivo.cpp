@@ -14,22 +14,34 @@
 using namespace std;
 
 struct nodo_archivo{
+	char* nombre;
+	nodoL bosque;
+	
+};
 
-    Archivo ph;
-    Archivo sh;
+struct nodo_lista{
+	nodoL siguiente;
+	nodoL anterior;
+	int posicion;
+	nodoV arbolVersion;
+};
+
+struct nodo_version{
+    nodoV ph;
+    nodoV sh;
+	nodoV padre;
     char* nombre;
     int nivel;      //Para la referencia cuando tratemos el nombre como un array de enteros,opcional tho.
-    int nombre_numerico[100];
+    int numero;
     texto linea;
 };
 
 //POS: toma un archivo y una version y te retorna un puntero a la version si existe o a NULL si no.
-Archivo version_existe(Archivo a, char* version){
-	if (a==NULL){
+nodoV version_existe(Archivo a, char* version){
+	if (a==NULL || a->bosque==NULL){
 		return NULL;
 	}  
-	if (strcmp(a->nombre, version) == 0)
-    return a;
+	if 
 	
 	Archivo encontrado = version_existe(a->ph, version);
 	if (encontrado!=NULL){
@@ -99,10 +111,10 @@ TipoRet InsertarLinea(Archivo &a, char* version, char* linea, unsigned int nroLi
 // No se puede insertar una línea en una versión que tenga subversiones.
 // Notar que el crear un archivo, éste no es editable hasta que no se crea al menos una versión del mismo. Sólo las versiones de un archivo son editables (se pueden insertar o suprimir líneas), siempre que no tengan subversiones creadas.
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
-	Archivo aux=version_existe(a, version);
+	nodoV aux=version_existe(a, version);
 	if(aux==NULL){
-		error = new char;
-		*error="La versión estipulada no existe";
+		error = new char[strlen("La versión estipulada no existe")];
+		
 		cout << *error << endl;
 		return ERROR;
 	} else if(aux->ph!=NULL){
@@ -142,7 +154,7 @@ TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * er
 
 TipoRet MostrarTexto(Archivo a, char * version){
 // Esta función muestra el texto completo de la version, teniendo en cuenta los cambios realizados en dicha versión y en las versiones ancestras, de la cual ella depende.
-	Archivo aux=version_existe(a, version);
+	nodoV aux=version_existe(a, version);
 	if(aux==NULL){						
 		char* error= new char;
 		*error= "La versión especificada no existe";
