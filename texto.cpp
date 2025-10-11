@@ -40,7 +40,7 @@ int contador_lineas(texto v){
 }
 
 //POS: Inserta una linea nueva en una posicion estipulada.
-void insertar(texto t, int nmr_linea, char* linea_a_insert){
+void insertar(texto &t, int nmr_linea, char* linea_a_insert){
      texto auxT=new nodo_texto;
      auxT->linea=linea_a_insert;
      auxT->num_linea=nmr_linea;
@@ -82,7 +82,7 @@ void insertar(texto t, int nmr_linea, char* linea_a_insert){
     
 }
 
-void borrar(texto t, int nmr_linea){
+void borrar(texto &t, int nmr_linea){
     texto aux=t;
     if(nmr_linea==1){
         t=t->sig_linea;
