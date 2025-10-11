@@ -36,19 +36,7 @@ struct nodo_version{
     texto linea;
 };
 
-//POS: toma un archivo y una version y te retorna un puntero a la version si existe o a NULL si no.
-nodoV version_existe(Archivo a, char* version){
-	if (a==NULL || a->bosque==NULL){
-		return NULL;
-	}  
-	if 
-	
-	Archivo encontrado = version_existe(a->ph, version);
-	if (encontrado!=NULL){
-		return encontrado;
-	}	
-	return version_existe(a->sh, version);
-}
+
 
 
 Archivo CrearArchivo(char * nombre){
@@ -63,15 +51,9 @@ TipoRet BorrarArchivo(Archivo &a){
 // Elimina toda la memoria utilizada por el archivo y asigna NULL al puntero a.
 // Se asume como precondición que a referencia a un archivo (en particular a es distinto a NULL).
 // Esta operación se ejecuta al final de una sesión de trabajo con un archivo.
-	if ( a==NULL ){
-		return OK;
-	}else{
-		delete[] a->nombre;
-		liberarVersiones(a->Versiones);
-		delete a;
-		a = NULL;
-		return OK;
-	}
+	
+
+
 }
 
 
@@ -114,32 +96,22 @@ TipoRet InsertarLinea(Archivo &a, char* version, char* linea, unsigned int nroLi
 	nodoV aux=version_existe(a, version);
 	if(aux==NULL){
 		error = new char[strlen("La versión estipulada no existe")];
-		
 		cout << *error << endl;
 		return ERROR;
 	} else if(aux->ph!=NULL){
-		error= new char;
-		error = "La version a modificar tiene subversiones. No se puede insertar la línea."
+		error= new char[strlen("La version a modificar tiene subversiones. No se puede insertar la línea.")];
 		cout << *error << endl;
 		return ERROR;
 	} else {
-		if(contador_lineas(aux->linea)+1 < nroLinea){
-			error= new char;
-			error = "Número de línea no válido."
+		if(contador_lineas(aux->linea)+1 < nroLinea || nroLinea < 1){
+			error= new char[strlen("Número de línea no válido.")];
 			cout << *error << endl;
-			cout << error << endl;
 			return ERROR;
 		} else {
-			
+			insertar(aux->linea, nroLinea, linea);	
+			return OK;
 		}
-
 	}
-	
-		
-	
-
-
-	return NO_IMPLEMENTADA;
 }
 
 TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * error){
@@ -148,6 +120,26 @@ TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * er
 // Cuando se elimina una línea, las siguientes líneas se corren, decrementando en una unidad sus posiciones para ocupar el lugar de la línea borrada.
 // No se puede borrar una línea de una versión que tenga subversiones creadas.
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
+	nodoV aux=version_existe(a, version);
+	if(aux==NULL){
+		error = new char[strlen("La versión estipulada no existe")];
+		cout << *error << endl;
+		return ERROR;
+	} else if(aux->ph!=NULL){
+		error= new char[strlen("La version a modificar tiene subversiones. No se puede eliminar la línea.")];
+		cout << *error << endl;
+		return ERROR;
+	} else {
+		if(contador_lineas(aux->linea) < nroLinea || nroLinea < 1){
+			error= new char[strlen("Número de línea no válido.")];
+			cout << *error << endl;
+			return ERROR;
+		} else {
+			borrar(aux->linea, nroLinea);	
+			return OK;
+		}
+	}
+
 
 	return NO_IMPLEMENTADA;
 }
@@ -156,9 +148,7 @@ TipoRet MostrarTexto(Archivo a, char * version){
 // Esta función muestra el texto completo de la version, teniendo en cuenta los cambios realizados en dicha versión y en las versiones ancestras, de la cual ella depende.
 	nodoV aux=version_existe(a, version);
 	if(aux==NULL){						
-		char* error= new char;
-		*error= "La versión especificada no existe";
-		cout << *error << endl;
+		cout << "La versión especificada no existe" << endl;
 		return ERROR;
 	} else {
 		recorrer_e_imprimir_texto(aux->linea, a->nombre, aux->nombre);
