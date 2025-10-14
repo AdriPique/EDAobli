@@ -48,7 +48,6 @@ nodoV borrar_arbol(nodoV v){
         v=NULL;
         return v;
     }
-
 }
 
 
