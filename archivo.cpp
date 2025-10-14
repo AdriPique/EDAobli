@@ -37,6 +37,20 @@ struct nodo_version{
 };
 
 
+nodoV borrar_arbol(nodoV v){
+	if(v==NULL){
+        return v;
+    } else {
+        v->ph=borrar_arbol(v->ph);
+        v->sh=borrar_arbol(v->sh);
+		eliminar_texto(v->linea);
+        delete v;
+        v=NULL;
+        return v;
+    }
+
+}
+
 
 
 Archivo CrearArchivo(char * nombre){
@@ -51,9 +65,17 @@ TipoRet BorrarArchivo(Archivo &a){
 // Elimina toda la memoria utilizada por el archivo y asigna NULL al puntero a.
 // Se asume como precondición que a referencia a un archivo (en particular a es distinto a NULL).
 // Esta operación se ejecuta al final de una sesión de trabajo con un archivo.
-	
-
-
+	nodoL aux=a->bosque;
+	nodoL aux2=aux;
+	while(aux!=NULL){
+		borrar_arbol(aux->arbolVersion);
+		aux=aux->siguiente;
+		delete aux2;
+		aux2=aux;
+	}
+	delete a;
+	a=NULL;
+	return OK;
 }
 
 
@@ -95,17 +117,17 @@ TipoRet InsertarLinea(Archivo &a, char* version, char* linea, unsigned int nroLi
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
 	nodoV aux=version_existe(a, version);
 	if(aux==NULL){
-		error = new char[strlen("La versión estipulada no existe")];
-		cout << *error << endl;
+		error = strdup("La versión estipulada no existe");
+		cout << error << endl;
 		return ERROR;
 	} else if(aux->ph!=NULL){
-		error= new char[strlen("La version a modificar tiene subversiones. No se puede insertar la línea.")];
-		cout << *error << endl;
+		error = strdup("La version a modificar tiene subversiones. No se puede insertar la línea.");
+		cout << error << endl;
 		return ERROR;
 	} else {
 		if(contador_lineas(aux->linea)+1 < nroLinea || nroLinea < 1){
-			error= new char[strlen("Número de línea no válido.")];
-			cout << *error << endl;
+			error = strdup("Número de línea no válido.");
+			cout << error << endl;
 			return ERROR;
 		} else {
 			insertar(aux->linea, nroLinea, linea);	
@@ -122,20 +144,20 @@ TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * er
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
 	nodoV aux=version_existe(a, version);
 	if(aux==NULL){
-		error = new char[strlen("La versión estipulada no existe")];
-		cout << *error << endl;
+		error = strdup("La versión estipulada no existe");
+		cout << error << endl;
 		return ERROR;
 	} else if(aux->ph!=NULL){
-		error= new char[strlen("La version a modificar tiene subversiones. No se puede eliminar la línea.")];
-		cout << *error << endl;
+		error= strdup("La version a modificar tiene subversiones. No se puede eliminar la línea.");
+		cout << error << endl;
 		return ERROR;
 	} else {
 		if(contador_lineas(aux->linea) < nroLinea || nroLinea < 1){
-			error= new char[strlen("Número de línea no válido.")];
-			cout << *error << endl;
+			error= strdup("Número de línea no válido.");
+			cout << error << endl;
 			return ERROR;
 		} else {
-			borrar(aux->linea, nroLinea);	
+			eliminar_linea(aux->linea, nroLinea);	
 			return OK;
 		}
 	}

@@ -27,16 +27,12 @@ void recorrer_e_imprimir_texto(texto t, char* nombre_arch, char* version){
 //POS: Retorna el número de lineas de texto de una version.
 //PRE: Recibe un puntero al PRIMER elemento de una lista o uno nulo en caso de lista vacía.
 int contador_lineas(texto v){
-    if(v==NULL){
-        return 0;
-    } else {
-    int cont=1;    
-    while(v->sig_linea!=NULL){
+    int cont=0;    
+    while(v!=NULL){
         cont++;
         v=v->sig_linea;
     }
     return cont;
-    }
 }
 
 //POS: Inserta una linea nueva en una posicion estipulada.
@@ -62,7 +58,7 @@ void insertar(texto &t, int nmr_linea, char* linea_a_insert){
         } 
     } else {
         texto movil=t;
-        while(movil->num_linea!=nmr_linea && movil->sig_linea!=NULL){
+        while( movil->sig_linea!=NULL && movil->num_linea!=nmr_linea){
             movil=movil->sig_linea;
         }    
         if(movil->num_linea==nmr_linea){
@@ -82,8 +78,14 @@ void insertar(texto &t, int nmr_linea, char* linea_a_insert){
     
 }
 
-void borrar(texto &t, int nmr_linea){
+
+//POS: Elimina una línea específica del texto, corrigiendo la posicion del resto.
+void eliminar_linea(texto &t, int nmr_linea){
     texto aux=t;
+    if (t->sig_linea==NULL){
+        delete t;
+        t=NULL;
+    } else {
     if(nmr_linea==1){
         t=t->sig_linea;
         t->ant_linea=NULL;
@@ -94,13 +96,31 @@ void borrar(texto &t, int nmr_linea){
             aux=aux->sig_linea;
         }
         texto aux2=aux;
-        aux->ant_linea->sig_linea=aux->sig_linea;
-        aux->sig_linea->ant_linea=aux->ant_linea;
-        aux=aux->sig_linea;
-        delete aux2;
-    }
+            if(aux->sig_linea!=NULL){
+                aux->ant_linea->sig_linea=aux->sig_linea;
+                aux->sig_linea->ant_linea=aux->ant_linea;
+                aux=aux->sig_linea;
+                delete aux2;
+            } else {
+                aux->ant_linea->sig_linea=NULL;
+                delete aux;
+            }
+        }
      while(aux!=NULL){
             aux->num_linea--;
             aux=aux->sig_linea;
         }
+    }
+}
+
+//POS:Elimina todo el texto de una version.
+//PRE: Puntero al primer elemento de la lista de texto.
+void eliminar_texto(texto &t){
+    texto aux=t;
+    while(t!=NULL){
+        t=t->sig_linea;
+        delete aux;
+        aux=t;
+    }
+    t=NULL;
 }
