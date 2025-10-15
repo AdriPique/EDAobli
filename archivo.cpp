@@ -50,6 +50,61 @@ nodoV borrar_arbol(nodoV v){
     }
 }
 
+nodoV encontrar_version(Archivo a, char* version){
+    //Pre: Saber que la version que queremos trabajar no es la primera 
+    //Post: Si existe version te devuelve la version en la que queremos trabajar
+    //Si no existe te devuelve null 
+    nodoL pos_lista= a->bosque;
+	if(pos_lista==NULL){
+		return NULL;
+	} else {
+    while(pos_lista!=NULL && pos_lista->posicion!=((int)*version-48)){
+		pos_lista=pos_lista->siguiente;
+	}
+	if(pos_lista==NULL){
+		return NULL;
+	} else {
+	nodoV quiero=pos_lista->arbolVersion;
+	int i=0;
+	int xd;
+    bool existe= false;
+    char actuall[MAX_NOMBRE];
+	actuall[0]='\0';
+	char* actual=actuall;
+	cout << "estoy en la lista en la posicion " << pos_lista->posicion << endl;
+	while(existe == false && version[i]!= '\0'){
+	
+        if(quiero->numero==(int)version[i]-48){//si el numero es igual nos metemos en ese puntero || probando con codigo ASCII 
+            cout << "entre al if uwu " << endl;
+			actuall[i]=quiero->numero+48;
+			actuall[i+1]='\0';
+            i=i+2; // nos paramos en el siguiente valor del string de aux
+            if(strcmp(version, actual)==0){//si actual y version son iguales existe version y cortamo
+                cout << "a ver si son iguales " << endl;
+				existe= true;
+            }
+			actual[i+1]='.';
+        } else if((quiero->sh!=NULL)&&( quiero->sh->numero==version[i]-48)){ //si la version en la que estamos parados tiene un hermano y esta version hermana nos sirve nos movemos
+            cout << "entre al else if 1 " << endl;
+			quiero=quiero->sh;// solo me muevo en sub versiones (hacia la derecha) si el siguiente numero me sirve
+
+        } else if((quiero->ph!=NULL)&& (quiero->ph->numero>=version[i]-48)){//siempre que el hijo sea mayor o igual sigo bajando
+            cout << "entre al else if 2 " << endl;
+			quiero=quiero->ph;
+        }
+        else {
+			cout << "entre al else normal " << endl;
+            i=i+2;//si no existe la version pero sigue habiendo que recorrer el string version lo recorremos 
+        }
+
+    }      
+    if(existe)
+        return quiero;
+    else
+        return NULL;
+	} 
+	}    
+}
 
 
 Archivo CrearArchivo(char * nombre){
@@ -84,10 +139,22 @@ TipoRet CrearVersion(Archivo &a, char* version, char* error){
 // Las versiones del primer nivel no siguen esta regla, ya que no tienen versión padre.
 // - No pueden quedar “huecos” entre versiones hermanas. Por ejemplo, si creamos la versión 2.15.3, las versiones 2.15.1 y 2.15.2 ya deben existir.
 // Ver ejemplo en la letra.
-
 	cout << "VERSION A INSERTAR: " << version << endl;
-
-	return NO_IMPLEMENTADA;
+	int version_num=(int)*version -48;
+	nodoL nodo=new nodo_lista;
+	nodo->posicion=version_num;
+	cout << "La posicion en la lista es " << version_num << endl;
+	a->bosque=nodo;
+	nodo->anterior=NULL;
+	nodo->siguiente=NULL;
+	nodoV raiz= new nodo_version;
+	nodo->arbolVersion=raiz;
+	raiz->padre=NULL;
+	raiz->ph=NULL;
+	raiz->sh=NULL;
+	raiz->nombre=version;
+	raiz->numero=version_num;
+	return OK;
 }
 
 TipoRet BorrarVersion(Archivo &a, char * version){
@@ -114,18 +181,19 @@ TipoRet InsertarLinea(Archivo &a, char* version, char* linea, unsigned int nroLi
 // No se puede insertar una línea en una versión que tenga subversiones.
 // Notar que el crear un archivo, éste no es editable hasta que no se crea al menos una versión del mismo. Sólo las versiones de un archivo son editables (se pueden insertar o suprimir líneas), siempre que no tengan subversiones creadas.
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
-	nodoV aux=version_existe(a, version);
+	cout << "entro a insertar" << endl;
+	nodoV aux=encontrar_version(a, version);
 	if(aux==NULL){
-		error = strdup("La versión estipulada no existe");
+		error = strdup("La version estipulada no existe");
 		cout << error << endl;
 		return ERROR;
 	} else if(aux->ph!=NULL){
-		error = strdup("La version a modificar tiene subversiones. No se puede insertar la línea.");
+		error = strdup("La version a modificar tiene subversiones. No se puede insertar la linea.");
 		cout << error << endl;
 		return ERROR;
 	} else {
 		if(contador_lineas(aux->linea)+1 < nroLinea || nroLinea < 1){
-			error = strdup("Número de línea no válido.");
+			error = strdup("Numero de linea no valido.");
 			cout << error << endl;
 			return ERROR;
 		} else {
@@ -141,18 +209,19 @@ TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * er
 // Cuando se elimina una línea, las siguientes líneas se corren, decrementando en una unidad sus posiciones para ocupar el lugar de la línea borrada.
 // No se puede borrar una línea de una versión que tenga subversiones creadas.
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
-	nodoV aux=version_existe(a, version);
+	cout << "entro a borrarLinea" << endl;
+	nodoV aux=encontrar_version(a, version);
 	if(aux==NULL){
-		error = strdup("La versión estipulada no existe");
+		error = strdup("La version estipulada no existe");
 		cout << error << endl;
 		return ERROR;
 	} else if(aux->ph!=NULL){
-		error= strdup("La version a modificar tiene subversiones. No se puede eliminar la línea.");
+		error= strdup("La version a modificar tiene subversiones. No se puede eliminar la linea.");
 		cout << error << endl;
 		return ERROR;
 	} else {
 		if(contador_lineas(aux->linea) < nroLinea || nroLinea < 1){
-			error= strdup("Número de línea no válido.");
+			error= strdup("Numero de linea no valido.");
 			cout << error << endl;
 			return ERROR;
 		} else {
@@ -167,9 +236,9 @@ TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * er
 
 TipoRet MostrarTexto(Archivo a, char * version){
 // Esta función muestra el texto completo de la version, teniendo en cuenta los cambios realizados en dicha versión y en las versiones ancestras, de la cual ella depende.
-	nodoV aux=version_existe(a, version);
+	nodoV aux=encontrar_version(a, version);
 	if(aux==NULL){						
-		cout << "La versión especificada no existe" << endl;
+		cout << "La version especificada no existe" << endl;
 		return ERROR;
 	} else {
 		recorrer_e_imprimir_texto(aux->linea, a->nombre, aux->nombre);

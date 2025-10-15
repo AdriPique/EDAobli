@@ -15,7 +15,7 @@ struct nodo_texto{
 void recorrer_e_imprimir_texto(texto t, char* nombre_arch, char* version){
     cout << nombre_arch << " - " << version << endl << endl;
     if(t==NULL){
-        cout << "No contiene líneas" << endl;
+        cout << "No contiene lineas" << endl;
     } else {
         while(t!=NULL){
             cout << t->num_linea << "   " << t->linea << endl;
