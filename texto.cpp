@@ -38,7 +38,7 @@ int contador_lineas(texto v){
 //POS: Inserta una linea nueva en una posicion estipulada.
 void insertar(texto &t, int nmr_linea, char* linea_a_insert){
      texto auxT=new nodo_texto;
-     auxT->linea=linea_a_insert;
+     auxT->linea=strdup (linea_a_insert);
      auxT->num_linea=nmr_linea;
      auxT->ant_linea=NULL;
      auxT->sig_linea=NULL;

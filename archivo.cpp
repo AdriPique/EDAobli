@@ -54,7 +54,8 @@ nodoV encontrar_version(Archivo a, char* version){
     //Pre: Saber que la version que queremos trabajar no es la primera 
     //Post: Si existe version te devuelve la version en la que queremos trabajar
     //Si no existe te devuelve null 
-    nodoL pos_lista= a->bosque;
+    cout << version << endl << endl << endl;
+	nodoL pos_lista= a->bosque;
 	if(pos_lista==NULL){
 		return NULL;
 	} else {
@@ -183,6 +184,7 @@ TipoRet InsertarLinea(Archivo &a, char* version, char* linea, unsigned int nroLi
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
 	cout << "entro a insertar" << endl;
 	nodoV aux=encontrar_version(a, version);
+	cout << "nose,pato" << endl;
 	if(aux==NULL){
 		error = strdup("La version estipulada no existe");
 		cout << error << endl;
