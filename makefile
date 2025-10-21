@@ -1,10 +1,11 @@
-todo: main.o archivo.o
-	g++ -Wall -o main main.o archivo.o
-main.o: main.c
-	g++ -Wall -c main.c
-archivo.o: archivo.h archivo.c
-	g++ -Wall -c archivo.c
+mi_programa: main.o archivo.o texto.o 
+	g++ -Wall -o main main.o archivo.o texto.o -o mi_programa
+main.o: main.cpp
+	g++ -Wall -c main.cpp
+archivo.o: archivo.h archivo.cpp
+	g++ -Wall -c archivo.cpp
+texto.o: texto.cpp
+	g++ -Wall -c texto.cpp
 limpiar:
-	rm -f main
+	rm -f mi_programa
 	rm -f *.o
-
