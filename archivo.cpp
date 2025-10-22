@@ -6,11 +6,9 @@
 
 #include "texto.h"
 #include "archivo.h"
+#include "versiones.h"
 #include <string.h>
 #include <iostream>
-
-
-
 using namespace std;
 
 struct nodo_archivo{
@@ -26,87 +24,21 @@ struct nodo_lista{
 	nodoV arbolVersion;
 };
 
-struct nodo_version{
-    nodoV ph;
-    nodoV sh;
-	nodoV padre;
-    char* nombre;
-    int nivel;      //Para la referencia cuando tratemos el nombre como un array de enteros,opcional tho.
-    int numero;
-    texto linea;
-};
-
-
-nodoV borrar_arbol(nodoV v){
-	if(v==NULL){
-        return v;
-    } else {
-        v->ph=borrar_arbol(v->ph);
-        v->sh=borrar_arbol(v->sh);
-		eliminar_texto(v->linea);
-        delete v;
-        v=NULL;
-        return v;
-    }
+nodoL lista_sig(nodoL l){
+	return l->siguiente;
 }
 
-nodoV encontrar_version(Archivo a, char* version){
-    //Pre: Saber que la version que queremos trabajar no es la primera 
-    //Post: Si existe version te devuelve la version en la que queremos trabajar
-    //Si no existe te devuelve null 
-    cout << version << endl << endl << endl;
-	nodoL pos_lista= a->bosque;
-	if(pos_lista==NULL){
-		return NULL;
-	} else {
-    while(pos_lista!=NULL && pos_lista->posicion!=((int)*version-48)){
-		pos_lista=pos_lista->siguiente;
-	}
-	if(pos_lista==NULL){
-		return NULL;
-	} else {
-	nodoV quiero=pos_lista->arbolVersion;
-	int i=0;
-	int xd;
-    bool existe= false;
-    char actuall[MAX_NOMBRE];
-	actuall[0]='\0';
-	char* actual=actuall;
-	cout << "estoy en la lista en la posicion " << pos_lista->posicion << endl;
-	while(existe == false && version[i]!= '\0'){
-	
-        if(quiero->numero==(int)version[i]-48){//si el numero es igual nos metemos en ese puntero || probando con codigo ASCII 
-            cout << "entre al if uwu " << endl;
-			actuall[i]=quiero->numero+48;
-			actuall[i+1]='\0';
-            i=i+2; // nos paramos en el siguiente valor del string de aux
-            if(strcmp(version, actual)==0){//si actual y version son iguales existe version y cortamo
-                cout << "a ver si son iguales " << endl;
-				existe= true;
-            }
-			actual[i+1]='.';
-        } else if((quiero->sh!=NULL)&&( quiero->sh->numero==version[i]-48)){ //si la version en la que estamos parados tiene un hermano y esta version hermana nos sirve nos movemos
-            cout << "entre al else if 1 " << endl;
-			quiero=quiero->sh;// solo me muevo en sub versiones (hacia la derecha) si el siguiente numero me sirve
-
-        } else if((quiero->ph!=NULL)&& (quiero->ph->numero>=version[i]-48)){//siempre que el hijo sea mayor o igual sigo bajando
-            cout << "entre al else if 2 " << endl;
-			quiero=quiero->ph;
-        }
-        else {
-			cout << "entre al else normal " << endl;
-            i=i+2;//si no existe la version pero sigue habiendo que recorrer el string version lo recorremos 
-        }
-
-    }      
-    if(existe)
-        return quiero;
-    else
-        return NULL;
-	} 
-	}    
+nodoV get_arbol_version(nodoL l){
+	return l->arbolVersion;
 }
 
+nodoL get_bosque(Archivo a){
+	return a->bosque;
+}
+
+int posicion_lista(nodoL l){
+	return l->posicion;
+}
 
 Archivo CrearArchivo(char * nombre){
 	Archivo a = new (nodo_archivo);
@@ -144,16 +76,15 @@ TipoRet CrearVersion(Archivo &a, char* version, char* error){
 	int version_num=(int)*version -48;
 	nodoL nodo=new nodo_lista;
 	nodo->posicion=version_num;
-	cout << "La posicion en la lista es " << version_num << endl;
 	a->bosque=nodo;
 	nodo->anterior=NULL;
 	nodo->siguiente=NULL;
-	nodoV raiz= new nodo_version;
+	nodoV raiz = nuevo_nodo_v();
 	nodo->arbolVersion=raiz;
-	raiz->padre=NULL;
-	raiz->ph=NULL;
-	raiz->sh=NULL;
-	raiz->nombre=version;
+	nodoV version_hermano(raiz)= new nodo_version;
+	nodoV version_hijo(raiz)= new nodo_version;
+	nodoV version_padre(raiz)= new nodo_version;
+	texto version_texto(raiz)= new texto;
 	raiz->numero=version_num;
 	return OK;
 }
@@ -182,9 +113,7 @@ TipoRet InsertarLinea(Archivo &a, char* version, char* linea, unsigned int nroLi
 // No se puede insertar una línea en una versión que tenga subversiones.
 // Notar que el crear un archivo, éste no es editable hasta que no se crea al menos una versión del mismo. Sólo las versiones de un archivo son editables (se pueden insertar o suprimir líneas), siempre que no tengan subversiones creadas.
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
-	cout << "entro a insertar" << endl;
 	nodoV aux=encontrar_version(a, version);
-	cout << "nose,pato" << endl;
 	if(aux==NULL){
 		error = strdup("La version estipulada no existe");
 		cout << error << endl;
@@ -211,7 +140,6 @@ TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * er
 // Cuando se elimina una línea, las siguientes líneas se corren, decrementando en una unidad sus posiciones para ocupar el lugar de la línea borrada.
 // No se puede borrar una línea de una versión que tenga subversiones creadas.
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
-	cout << "entro a borrarLinea" << endl;
 	nodoV aux=encontrar_version(a, version);
 	if(aux==NULL){
 		error = strdup("La version estipulada no existe");

@@ -66,4 +66,13 @@ TipoRet VersionIndependiente(Archivo &a, char * version);
 // Esta función crea una nueva versión al final del primer nivel con todos los cambios de la version especificada y de sus versiones ancestras. La versión que se crea debe ser independiente de cualquier otra versión.
 // Por ejemplo, si creamos una versión independiente a partir de la 2.11.3, entonces se crea una nueva versión al final del primer nivel (si existen las versiones 1, 2, 3 y 4, entonces se crea la 5) con los cambios realizados a las versiones 2, 2.11 y 2.11.3.
 
+//Devuleve el siguiente elemento de una lista
+nodoL lista_sig(nodoL l);
+
+//Devuelve el arbol de un nodo de la lista de versiones
+nodoV get_arbol_version(nodoL l);
+
+//Devuelve la posicion de la lista de un nodo.
+int posicion_lista(nodoL l);
+
 #endif
