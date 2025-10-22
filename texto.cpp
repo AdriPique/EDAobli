@@ -11,6 +11,15 @@ struct nodo_texto{
     texto ant_linea;
 };
 
+texto nuevo_nodo_texto(){
+    texto tex= new nodo_texto;
+    tex->num_linea=0;
+    tex->linea=NULL;
+    tex->sig_linea=NULL;
+    tex->ant_linea=NULL;
+    return tex;
+}
+
 //POS: solo muestra el texto linea por linea, función auxiliar a MostrarTexto.
 void recorrer_e_imprimir_texto(texto t, char* nombre_arch, char* version){
     cout << nombre_arch << " - " << version << endl << endl;
@@ -80,7 +89,7 @@ void insertar(texto &t, int nmr_linea, char* linea_a_insert){
 
 
 //POS: Elimina una línea específica del texto, corrigiendo la posicion del resto.
-void eliminar_linea(texto &t, int nmr_linea){
+void eliminar_linea(texto t, int nmr_linea){
     texto aux=t;
     if (t->sig_linea==NULL){
         delete t;
@@ -115,7 +124,7 @@ void eliminar_linea(texto &t, int nmr_linea){
 
 //POS:Elimina todo el texto de una version.
 //PRE: Puntero al primer elemento de la lista de texto.
-void eliminar_texto(texto &t){
+void eliminar_texto(texto t){
     texto aux=t;
     while(t!=NULL){
         t=t->sig_linea;

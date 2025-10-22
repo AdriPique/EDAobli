@@ -21,6 +21,14 @@ struct nodo_version{
 
 nodoV nuevo_nodo_v(){
     nodoV v = new nodo_version;
+    v->historial=NULL;
+    v->linea=NULL;
+    v->nivel= 0;
+    v->nombre=NULL;
+    v->numero= 0;
+    v->padre=NULL;
+    v->ph=NULL;
+    v->sh=NULL;
     return v;
 }
 
@@ -42,6 +50,10 @@ nodoV version_padre(nodoV v){
 //Post: devuelve el texto de una version.
 texto version_texto(nodoV v){
     return v->linea;
+}
+
+char* version_nombre(nodoV v){
+    return v->nombre;
 }
 
 nodoV borrar_arbol(nodoV v){

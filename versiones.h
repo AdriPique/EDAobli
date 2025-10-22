@@ -9,3 +9,4 @@ nodoV version_hermano(nodoV v);
 nodoV version_hijo(nodoV v);
 nodoV version_padre(nodoV v);
 texto version_texto(nodoV v);
+char* version_nombre(nodoV v);

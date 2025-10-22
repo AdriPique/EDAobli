@@ -81,10 +81,6 @@ TipoRet CrearVersion(Archivo &a, char* version, char* error){
 	nodo->siguiente=NULL;
 	nodoV raiz = nuevo_nodo_v();
 	nodo->arbolVersion=raiz;
-	nodoV version_hermano(raiz)= new nodo_version;
-	nodoV version_hijo(raiz)= new nodo_version;
-	nodoV version_padre(raiz)= new nodo_version;
-	texto version_texto(raiz)= new texto;
 	raiz->numero=version_num;
 	return OK;
 }
@@ -114,21 +110,22 @@ TipoRet InsertarLinea(Archivo &a, char* version, char* linea, unsigned int nroLi
 // Notar que el crear un archivo, éste no es editable hasta que no se crea al menos una versión del mismo. Sólo las versiones de un archivo son editables (se pueden insertar o suprimir líneas), siempre que no tengan subversiones creadas.
 // En caso que TipoRet sea ERROR, en error se debe cargar cuál es el mismo.
 	nodoV aux=encontrar_version(a, version);
+	texto auxT= version_texto(aux); 
 	if(aux==NULL){
 		error = strdup("La version estipulada no existe");
 		cout << error << endl;
 		return ERROR;
-	} else if(aux->ph!=NULL){
+	} else if(version_hijo(aux)!=NULL){
 		error = strdup("La version a modificar tiene subversiones. No se puede insertar la linea.");
 		cout << error << endl;
 		return ERROR;
 	} else {
-		if(contador_lineas(aux->linea)+1 < nroLinea || nroLinea < 1){
+		if(contador_lineas(auxT)+1 < nroLinea || nroLinea < 1){
 			error = strdup("Numero de linea no valido.");
 			cout << error << endl;
 			return ERROR;
 		} else {
-			insertar(aux->linea, nroLinea, linea);	
+			insertar(auxT, nroLinea, linea);	
 			return OK;
 		}
 	}
@@ -145,23 +142,20 @@ TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * er
 		error = strdup("La version estipulada no existe");
 		cout << error << endl;
 		return ERROR;
-	} else if(aux->ph!=NULL){
+	} else if(version_hijo(aux)!=NULL){
 		error= strdup("La version a modificar tiene subversiones. No se puede eliminar la linea.");
 		cout << error << endl;
 		return ERROR;
 	} else {
-		if(contador_lineas(aux->linea) < nroLinea || nroLinea < 1){
+		if(contador_lineas(version_texto(aux)) < nroLinea || nroLinea < 1){
 			error= strdup("Numero de linea no valido.");
 			cout << error << endl;
 			return ERROR;
 		} else {
-			eliminar_linea(aux->linea, nroLinea);	
+			eliminar_linea(version_texto(aux), nroLinea);	
 			return OK;
 		}
 	}
-
-
-	return NO_IMPLEMENTADA;
 }
 
 TipoRet MostrarTexto(Archivo a, char * version){
@@ -171,7 +165,7 @@ TipoRet MostrarTexto(Archivo a, char * version){
 		cout << "La version especificada no existe" << endl;
 		return ERROR;
 	} else {
-		recorrer_e_imprimir_texto(aux->linea, a->nombre, aux->nombre);
+		recorrer_e_imprimir_texto(version_texto(aux), a->nombre, version_nombre(aux));
 		return OK;
 	}
 }
