@@ -2,6 +2,7 @@
 #include "texto.h"
 #include "definiciones.h"
 #include "archivo.h"
+#include "lista_arboles.h"
 #include <iostream>
 #include "string.h"
 using namespace std;
@@ -123,4 +124,19 @@ nodoV encontrar_version(Archivo a, char* version){
         return NULL;
 	} 
 	}    
+}
+
+//Pos: Recorre un arbol finitario e imprime todas los nombres de sus nodos.
+//Pre: arbol no vacío, puntero al primer elemento del arbol
+void imprimir_versiones(nodoV v){
+    if(v==NULL){
+        
+    } else {
+        cout << v->nombre << endl;              //Ver como implementar lo de los espacios por nivel.
+        if(v->sh!=NULL){
+            imprimir_versiones(v->sh);
+        } else if(v->ph!=NULL){
+            imprimir_versiones(v->ph);
+        }
+    }
 }

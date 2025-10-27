@@ -7,6 +7,7 @@
 #include "texto.h"
 #include "archivo.h"
 #include "versiones.h"
+#include "lista_arboles.h"
 #include <string.h>
 #include <iostream>
 using namespace std;
@@ -17,27 +18,9 @@ struct nodo_archivo{
 	
 };
 
-struct nodo_lista{
-	nodoL siguiente;
-	nodoL anterior;
-	int posicion;
-	nodoV arbolVersion;
-};
-
-nodoL lista_sig(nodoL l){
-	return l->siguiente;
-}
-
-nodoV get_arbol_version(nodoL l){
-	return l->arbolVersion;
-}
-
+//Retorna un puntero al bosque de un archivo
 nodoL get_bosque(Archivo a){
 	return a->bosque;
-}
-
-int posicion_lista(nodoL l){
-	return l->posicion;
 }
 
 Archivo CrearArchivo(char * nombre){
@@ -55,8 +38,8 @@ TipoRet BorrarArchivo(Archivo &a){
 	nodoL aux=a->bosque;
 	nodoL aux2=aux;
 	while(aux!=NULL){
-		borrar_arbol(aux->arbolVersion);
-		aux=aux->siguiente;
+		borrar_arbol(get_arbol_version(aux));
+		aux=lista_sig(aux);
 		delete aux2;
 		aux2=aux;
 	}
@@ -72,17 +55,7 @@ TipoRet CrearVersion(Archivo &a, char* version, char* error){
 // Las versiones del primer nivel no siguen esta regla, ya que no tienen versión padre.
 // - No pueden quedar “huecos” entre versiones hermanas. Por ejemplo, si creamos la versión 2.15.3, las versiones 2.15.1 y 2.15.2 ya deben existir.
 // Ver ejemplo en la letra.
-	cout << "VERSION A INSERTAR: " << version << endl;
-	int version_num=(int)*version -48;
-	nodoL nodo=new nodo_lista;
-	nodo->posicion=version_num;
-	a->bosque=nodo;
-	nodo->anterior=NULL;
-	nodo->siguiente=NULL;
-	nodoV raiz = nuevo_nodo_v();
-	nodo->arbolVersion=raiz;
-	raiz->numero=version_num;
-	return OK;
+
 }
 
 TipoRet BorrarVersion(Archivo &a, char * version){
@@ -97,6 +70,7 @@ TipoRet MostrarVersiones(Archivo a){
 // FORMATO: En primer lugar muestra el nombre del archivo. Después de una línea en blanco lista todos las versiones del archivo
 // ordenadas por nivel jerárquico e indentadas según muestra el ejemplo publicado en la letra (cada nivel está indentado por un tabulador).
 	cout << a->nombre << endl << endl;
+
 
 
 	return NO_IMPLEMENTADA;
