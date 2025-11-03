@@ -251,9 +251,44 @@ TipoRet MostrarTexto(Archivo a, char * version){
 
 TipoRet MostrarCambios(Archivo a, char * version){
 // Esta función muestra los cambios que se realizaron en el texto de la version parámetro, sin incluir los cambios realizados en las versiones ancestras de la cual dicha versión depende.
+// Muestra los cambios realizados en la versión respecto a su padre directo.
+    nodoV aux = encontrar_version(a, version);
+    if (aux == NULL) {
+        cout << "La versión especificada no existe" << endl;
+        return ERROR;
+    }
 
-	return NO_IMPLEMENTADA;
+    cout << a->nombre << " - " << aux->nombre << endl << endl;
+
+    // Si no hay texto asociado ni modificaciones
+    if (aux->linea == NULL) {
+        cout << "No se realizaron modificaciones" << endl;
+        return OK;
+    }
+
+    // Como todavía no hay estructura de seguimiento de cambios (solo el texto final),
+    // mostramos todas las líneas como inserciones locales (IL) para testeo del flujo.
+    texto t = aux->linea;
+	int num= numerolinea(t);
+	char *s=new(char); 
+	linea(t,s);
+    if (t == NULL) {
+        cout << "No se realizaron modificaciones" << endl;
+    } else {
+        while (t != NULL) {
+            cout << "IL\t" << num << "\t" << s << endl;
+             t = siguientelinea(t); 
+			 num=numerolinea(t);
+			 linea(t,s);
+
+        }
+    }
+
+    return OK;
+
 }
+
+
 
 TipoRet Iguales(Archivo a, char * version1, char * version2, bool &iguales){
 // Esta función asigna al parámetro booleano (iguales) el valor true si ambas versiones (version1 y version2) del archivo tienen exactamente el mismo texto, y false en caso contrario.
