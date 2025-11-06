@@ -10,7 +10,6 @@
 #include "definiciones.h"//adas
 typedef struct nodo_archivo* Archivo;
 typedef struct nodo_version* nodoV; 
-typedef struct nodo_lista* nodoL;
 
 Archivo CrearArchivo(char * nombre);
 // Crea el archivo con el nombre especificado y lo inicializa sin contenido (vacío).
@@ -65,5 +64,7 @@ TipoRet Iguales(Archivo a, char * version1, char * version2, bool &iguales);
 TipoRet VersionIndependiente(Archivo &a, char * version);
 // Esta función crea una nueva versión al final del primer nivel con todos los cambios de la version especificada y de sus versiones ancestras. La versión que se crea debe ser independiente de cualquier otra versión.
 // Por ejemplo, si creamos una versión independiente a partir de la 2.11.3, entonces se crea una nueva versión al final del primer nivel (si existen las versiones 1, 2, 3 y 4, entonces se crea la 5) con los cambios realizados a las versiones 2, 2.11 y 2.11.3.
+
+nodoL get_bosque(Archivo a);
 
 #endif
