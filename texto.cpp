@@ -133,3 +133,15 @@ void eliminar_texto(texto t){
     }
     t=NULL;
 }
+
+texto siguientelinea(texto t){
+    return t->sig_linea;
+}
+int  numerolinea(texto t){
+    return t-> num_linea;
+}
+void linea(texto t,char * &s){
+    char *s=new(char); 
+    s=t->linea;
+    
+}
