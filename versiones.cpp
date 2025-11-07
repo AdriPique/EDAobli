@@ -15,7 +15,7 @@ struct nodo_version{
     char* nombre;
     int nivel;      //Para la referencia cuando tratemos el nombre como un array de enteros,opcional tho.
     int numero;
-    texto linea;
+    texto linea;    //Esto es para el texto d euna version
     texto historial;
 };
 
@@ -57,6 +57,14 @@ char* version_nombre(nodoV v){
     return v->nombre;
 }
 
+texto version_linea(nodoV v){
+    return v->linea;
+}
+
+texto version_historial(nodoV v){
+    return v->historial;
+}
+
 nodoV borrar_arbol(nodoV v){
 	if(v==NULL){
         return v;
@@ -75,7 +83,7 @@ nodoV encontrar_version(Archivo a, char* version){
     //Post: Si existe version te devuelve la version en la que queremos trabajar
     //Si no existe te devuelve null 
     cout << version << endl << endl << endl;
-	nodoL pos_lista= get_bosque(a);
+	nodoL pos_lista= obtener_bosque(a);
 	if(pos_lista==NULL){
 		return NULL;
 	} else {

@@ -19,7 +19,7 @@ struct nodo_archivo{
 };
 
 //Retorna un puntero al bosque de un archivo
-nodoL get_bosque(Archivo a){
+nodoL obtener_bosque(Archivo a){
 	return a->bosque;
 }
 
@@ -126,7 +126,9 @@ TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * er
 			cout << error << endl;
 			return ERROR;
 		} else {
-			eliminar_linea(version_texto(aux), nroLinea);	
+			texto a_borrar=version_texto(aux);
+			eliminar_linea(a_borrar, nroLinea);
+				
 			return OK;
 		}
 	}
@@ -154,10 +156,10 @@ TipoRet MostrarCambios(Archivo a, char * version){
         return ERROR;
     }
 
-    cout << a->nombre << " - " << aux->nombre << endl << endl;
+    cout << a->nombre << " - " << version_nombre(aux) << endl << endl;
 
     // Si no hay texto asociado ni modificaciones
-    if (aux->linea == NULL) {
+    if (version_linea(aux) == NULL) {
         cout << "No se realizaron modificaciones" << endl;
         return OK;
     }

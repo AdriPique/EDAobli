@@ -1,4 +1,5 @@
 #include "texto.h"
+#include "versiones.h"
 #include <iostream>
 using namespace std;
 #include <string.h>
@@ -9,6 +10,7 @@ struct nodo_texto{
     char* linea;
     texto sig_linea;
     texto ant_linea;
+    string insert_o_borr;
 };
 
 texto nuevo_nodo_texto(){
@@ -45,12 +47,14 @@ int contador_lineas(texto v){
 }
 
 //POS: Inserta una linea nueva en una posicion estipulada.
-void insertar(texto &t, int nmr_linea, char* linea_a_insert){
+void insertar(texto &t, int nmr_linea, char* linea_a_insert, nodoV v){
      texto auxT=new nodo_texto;
      auxT->linea=strdup (linea_a_insert);
      auxT->num_linea=nmr_linea;
      auxT->ant_linea=NULL;
      auxT->sig_linea=NULL;
+     
+
 
     if (t==NULL){
         t=auxT;
@@ -87,9 +91,27 @@ void insertar(texto &t, int nmr_linea, char* linea_a_insert){
     
 }
 
+//POS: Inserta una linea en la ultima posicion dle historial de una version.
+texto insertar_texto_historial(nodoV v, int nmr_linea, char* linea_a_insert, int x){
+    texto auxH=new nodo_texto;
+    auxH->linea=strdup (linea_a_insert);
+    auxH->num_linea=nmr_linea;
+    auxH->ant_linea=NULL;
+    auxH->sig_linea=NULL;
+    if (x==0){
+        auxH->insert_o_borr= "IL";
+    } else {
+        auxH->insert_o_borr= "BL";
+    }
+    if (version_historial(v)==NULL){
+        hisV=version_historial( v)  //no, hacer un setter.
+        version_historial(v)=auxH;
+    }
+}
+
 
 //POS: Elimina una línea específica del texto, corrigiendo la posicion del resto.
-void eliminar_linea(texto t, int nmr_linea){
+void eliminar_linea(texto t , int nmr_linea){
     texto aux=t;
     if (t->sig_linea==NULL){
         delete t;

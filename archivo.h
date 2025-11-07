@@ -65,6 +65,7 @@ TipoRet VersionIndependiente(Archivo &a, char * version);
 // Esta función crea una nueva versión al final del primer nivel con todos los cambios de la version especificada y de sus versiones ancestras. La versión que se crea debe ser independiente de cualquier otra versión.
 // Por ejemplo, si creamos una versión independiente a partir de la 2.11.3, entonces se crea una nueva versión al final del primer nivel (si existen las versiones 1, 2, 3 y 4, entonces se crea la 5) con los cambios realizados a las versiones 2, 2.11 y 2.11.3.
 
-nodoL get_bosque(Archivo a);
+//retorna el Bosque de un archivo (lista de arboles).
+nodoL obtener_bosque(Archivo a);
 
 #endif
