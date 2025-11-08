@@ -65,6 +65,10 @@ texto version_historial(nodoV v){
     return v->historial;
 }
 
+void def_version_historial(texto nuevo_hist, nodoV v){
+    v->historial=nuevo_hist;
+}
+
 nodoV borrar_arbol(nodoV v){
 	if(v==NULL){
         return v;
@@ -72,6 +76,7 @@ nodoV borrar_arbol(nodoV v){
         v->ph=borrar_arbol(v->ph);
         v->sh=borrar_arbol(v->sh);
 		eliminar_texto(v->linea);
+        eliminar_texto(v->historial);
         delete v;
         v=NULL;
         return v;
@@ -83,7 +88,7 @@ nodoV encontrar_version(Archivo a, char* version){
     //Post: Si existe version te devuelve la version en la que queremos trabajar
     //Si no existe te devuelve null 
     cout << version << endl << endl << endl;
-	nodoL pos_lista= obtener_bosque(a);
+	nodoL pos_lista= get_bosque(a);
 	if(pos_lista==NULL){
 		return NULL;
 	} else {

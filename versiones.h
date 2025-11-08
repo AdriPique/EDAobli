@@ -32,3 +32,6 @@ texto version_historial(nodoV v);
 //Pos: Recorre un arbol finitario e imprime todas los nombres de sus nodos.
 //Pre: arbol no vacío, puntero al primer elemento del arbol
 void imprimir_versiones(nodoV v);
+
+//Setter del historial de una version, para inicializar.
+void def_version_historial(texto nuevo_hist, nodoV v);

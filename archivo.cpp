@@ -19,7 +19,7 @@ struct nodo_archivo{
 };
 
 //Retorna un puntero al bosque de un archivo
-nodoL obtener_bosque(Archivo a){
+nodoL get_bosque(Archivo a){
 	return a->bosque;
 }
 
@@ -127,7 +127,7 @@ TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * er
 			return ERROR;
 		} else {
 			texto a_borrar=version_texto(aux);
-			eliminar_linea(a_borrar, nroLinea);
+			eliminar_linea(a_borrar, nroLinea, aux);
 				
 			return OK;
 		}
@@ -164,23 +164,7 @@ TipoRet MostrarCambios(Archivo a, char * version){
         return OK;
     }
 
-    // Como todavía no hay estructura de seguimiento de cambios (solo el texto final),
-    // mostramos todas las líneas como inserciones locales (IL) para testeo del flujo.
-    texto t = aux->linea;
-	int num= numerolinea(t);
-	char *s=new(char); 
-	linea(t,s);
-    if (t == NULL) {
-        cout << "No se realizaron modificaciones" << endl;
-    } else {
-        while (t != NULL) {
-            cout << "IL\t" << num << "\t" << s << endl;
-             t = siguientelinea(t); 
-			 num=numerolinea(t);
-			 linea(t,s);
-
-        }
-    }
+    
 
     return OK;
 
