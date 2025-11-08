@@ -316,8 +316,22 @@ TipoRet MostrarCambios(Archivo a, char * version){
 
 TipoRet Iguales(Archivo a, char * version1, char * version2, bool &iguales){
 // Esta función asigna al parámetro booleano (iguales) el valor true si ambas versiones (version1 y version2) del archivo tienen exactamente el mismo texto, y false en caso contrario.
+iguales = false;
 
-	return NO_IMPLEMENTADA;
+	nodoV primera = encontrar_version(a, version1);
+	if(primera == NULL){
+		cout << "La version estipulada no existe" << endl;
+		return ERROR;
+	}
+
+	nodoV segunda = encontrar_version(a, version2);
+	if(segunda == NULL){
+		cout << "La version estipulada no existe" << endl;
+		return ERROR;
+	}
+
+	iguales = textos_iguales(version_texto(primera), version_texto(segunda));
+	return OK;
 }
 
 TipoRet VersionIndependiente(Archivo &a, char * version){

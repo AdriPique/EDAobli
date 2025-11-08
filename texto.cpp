@@ -156,6 +156,29 @@ void eliminar_texto(texto t){
     t=NULL;
 }
 
+bool textos_iguales(texto t1, texto t2){
+    texto aux1 = t1;
+    texto aux2 = t2;
+
+    while(aux1 != NULL && aux2 != NULL){
+        if(aux1->num_linea != aux2->num_linea){
+            return false;
+        }
+        if(aux1->linea == NULL || aux2->linea == NULL){
+            if(aux1->linea != aux2->linea){
+                return false;
+            }
+        } else if(strcmp(aux1->linea, aux2->linea) != 0){
+            return false;
+        }
+
+        aux1 = aux1->sig_linea;
+        aux2 = aux2->sig_linea;
+    }
+
+    return aux1 == NULL && aux2 == NULL;
+}
+
 texto siguientelinea(texto t){
     return t->sig_linea;
 }
