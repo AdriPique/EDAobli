@@ -10,7 +10,9 @@
 #include "lista_arboles.h"
 #include <string.h>
 #include <iostream>
+#include <cstdio>
 using namespace std;
+
 
 struct nodo_archivo{
 	char* nombre;
@@ -58,12 +60,136 @@ TipoRet CrearVersion(Archivo &a, char* version, char* error){
 
 }
 
+static void actualizar_nombre_nodo(nodoV v){
+    if (v==NULL)
+    {
+        return;
+    }
+
+    if(v->nombre==NULL){
+		v->nombre = new char[MAX_NOMBRE];
+    }
+
+    if (v->padre != NULL)
+    {
+		snprintf(v->nombre, MAX_NOMBRE, "%s.%d", v->padre->nombre, v->numero);
+    } else {
+		snprintf(v->nombre, MAX_NOMBRE, "%d", v->numero);
+    }
+	v->nombre[MAX_NOMBRE-1] = '\0';
+	
+}
+static void actualizar_subarbol(nodoV v){
+	if (v==NULL){
+		return;
+	}
+	actualizar_nombre_nodo(v);
+	nodoV hijo = version_hijo(v);
+	while (hijo!=NULL){
+		hijo->padre=v;
+		actualizar_subarbol(hijo);
+		hijo=version_hermano(hijo);
+	}
+}
+static void renumerar_hijos(nodoV padre){
+	if(padre==NULL){
+		return;
+	}
+	nodoV hijo=version_hijo(padre);
+	int inidice = 1;
+	while(hijo!=NULL){
+		hijo->numero=inidice++;
+		hijo->padre=padre;
+		actualizar_subarbol(hijo);
+		hijo=version_hermano(hijo);
+	}
+}
+static void renumerar_bosque(Archivo a){
+	if(a == NULL){
+		return;
+	}
+	nodoL actual = obtener_bosque(a);
+	int indice = 1;
+	while(actual != NULL){
+		lista_set_posicion(actual, indice);
+		nodoV raiz = get_arbol_version(actual);
+		if(raiz != NULL){
+			raiz->numero = indice;
+			raiz->padre = NULL;
+			actualizar_subarbol(raiz);
+		}
+		actual = lista_sig(actual);
+		indice++;
+	}
+}
+
 TipoRet BorrarVersion(Archivo &a, char * version){
 // Elimina una versión del archivo si la version pasada por parámetro existe. En otro caso la operación quedará sin efecto.
 // Si la versión a eliminar posee subversiones, éstas deberán ser eliminadas también, así como el texto asociado a cada una de las versiones.
 // No deben quedar números de versiones libres sin usar. Por lo tanto cuando se elimina una versión, las versiones hermanas que le siguen deben decrementar su numeración (así también sus subversiones dependientes). Por ejemplo, si existen las versiones 2.15.1, 2.15.2 y 2.15.3, y elimino la 2.15.1, la versión 2.15.2 y la 2.15.3 pasan a ser 2.15.1 y 2.15.2 respectivamente, esto incluye a todas las subversiones de estas versiones.
 
-	return NO_IMPLEMENTADA;
+	if(a==NULL || version==NULL){
+                return ERROR;
+        }
+
+        nodoV objetivo = encontrar_version(a, version);
+        if(objetivo==NULL){
+                return ERROR;
+        }
+
+        nodoV padre = version_padre(objetivo);
+        if(padre==NULL){
+                nodoL actual = obtener_bosque(a);
+                nodoL anterior = NULL;
+                while(actual!=NULL && get_arbol_version(actual)!=objetivo){
+                        anterior = actual;
+                        actual = lista_sig(actual);
+                }
+                if(actual==NULL){
+                        return ERROR;
+                }
+                nodoL siguiente = lista_sig(actual);
+                if(anterior==NULL){
+                        a->bosque = siguiente;
+                } else {
+                        lista_set_sig(anterior, siguiente);
+                }
+                if(siguiente!=NULL){
+                        lista_set_ant(siguiente, anterior);
+                }
+                lista_set_sig(actual, NULL);
+                lista_set_ant(actual, NULL);
+                objetivo->sh = NULL;
+                objetivo->padre = NULL;
+                borrar_arbol(objetivo);
+                delete actual;
+                renumerar_bosque(a);
+        } else {
+                nodoV hijo = version_hijo(padre);
+                nodoV anterior = NULL;
+                while(hijo!=NULL && hijo!=objetivo){
+                        anterior = hijo;
+                        hijo = version_hermano(hijo);
+                }
+                if(hijo==NULL){
+                        return ERROR;
+                }
+                nodoV siguiente = version_hermano(objetivo);
+                if(anterior==NULL){
+                        padre->ph = siguiente;
+                } else {
+                        anterior->sh = siguiente;
+                }
+                if(siguiente!=NULL){
+                        siguiente->padre = padre;
+                }
+                objetivo->sh = NULL;
+                objetivo->padre = NULL;
+                borrar_arbol(objetivo);
+                renumerar_hijos(padre);
+        }
+
+        return OK;
 }
 
 TipoRet MostrarVersiones(Archivo a){

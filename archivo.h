@@ -8,6 +8,12 @@
 // Modulo de especificacion de archivo.
 
 #include "definiciones.h"//adas
+struct nodo_lista;
+#ifndef TIPO_NODOL_DEF
+#define TIPO_NODOL_DEF
+typedef struct nodo_lista* nodoL;
+#endif
+
 typedef struct nodo_archivo* Archivo;
 typedef struct nodo_version* nodoV; 
 

@@ -1,5 +1,21 @@
+#ifndef VERSIONES_H
+#define VERSIONES_H
+
 #include "archivo.h"
 #include "texto.h"
+
+struct nodo_version{
+    nodo_version* ph;
+    nodo_version* sh;
+    nodo_version* padre;
+    char* nombre;
+    int numero;
+    int nivel;
+    texto linea;    //Esto es para el texto d euna version
+    texto historial;
+};
+
+
 typedef struct nodo_version* nodoV;
 nodoV nuevo_nodo_v();
 //Elimina todos los nodos de un arbol y libera toda la memoria.
@@ -32,3 +48,4 @@ texto version_historial(nodoV v);
 //Pos: Recorre un arbol finitario e imprime todas los nombres de sus nodos.
 //Pre: arbol no vacío, puntero al primer elemento del arbol
 void imprimir_versiones(nodoV v);
+#endif

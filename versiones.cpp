@@ -7,19 +7,6 @@
 #include "string.h"
 using namespace std;
 
-
-struct nodo_version{
-    nodoV ph;
-    nodoV sh;
-	nodoV padre;
-    char* nombre;
-    int nivel;      //Para la referencia cuando tratemos el nombre como un array de enteros,opcional tho.
-    int numero;
-    texto linea;    //Esto es para el texto d euna version
-    texto historial;
-};
-
-
 nodoV nuevo_nodo_v(){
     nodoV v = new nodo_version;
     v->historial=NULL;
