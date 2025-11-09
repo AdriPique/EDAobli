@@ -35,3 +35,13 @@ void imprimir_versiones(nodoV v);
 
 //Setter del historial de una version, para inicializar.
 void def_version_historial(texto nuevo_hist, nodoV v);
+
+int numVersion(nodoV v);
+
+nodoV buscarPadre(Archivo a,char * version);
+
+int obtenerUltimoNumero(char *version);
+
+nodoV buscarHermanoAnterior(Archivo a, char *version);
+
+nodoV encontrarVersion (Archivo a, char * version );

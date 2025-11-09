@@ -19,7 +19,7 @@ struct nodo_archivo{
 };
 
 //Retorna un puntero al bosque de un archivo
-nodoL get_bosque(Archivo a){
+nodoL obtener_bosque(Archivo a){
 	return a->bosque;
 }
 

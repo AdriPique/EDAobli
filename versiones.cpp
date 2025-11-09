@@ -69,6 +69,10 @@ void def_version_historial(texto nuevo_hist, nodoV v){
     v->historial=nuevo_hist;
 }
 
+int numVersion(nodoV v){
+    return v->numero;
+}
+
 nodoV borrar_arbol(nodoV v){
 	if(v==NULL){
         return v;
@@ -88,7 +92,7 @@ nodoV encontrar_version(Archivo a, char* version){
     //Post: Si existe version te devuelve la version en la que queremos trabajar
     //Si no existe te devuelve null 
     cout << version << endl << endl << endl;
-	nodoL pos_lista= get_bosque(a);
+	nodoL pos_lista= obtener_bosque(a);
 	if(pos_lista==NULL){
 		return NULL;
 	} else {
@@ -152,4 +156,108 @@ void imprimir_versiones(nodoV v){
             imprimir_versiones(v->ph);
         }
     }
+}
+
+nodoV encontrarVersion (Archivo a, char * version ){
+    bool existe = true;
+    char * path = strtok(version,".");
+    int num = atoi(path);
+
+    nodoL lista = obtener_bosque(a);
+    nodoV v;
+
+    // Buscar raíz
+    if(lista == NULL){
+        return NULL;
+    }
+
+    while(lista != NULL && posicion_lista(lista) != num){
+        lista = lista_sig(lista);
+    }
+
+    if(lista == NULL)
+        return NULL;
+
+    v = get_arbol_version(lista);
+
+    // Cada '.' baja un nivel → por cada token bajamos a los hijos
+    path = strtok(NULL,".");
+    while(existe && path != NULL){
+        num = atoi(path);
+
+        // Bajamos un nivel
+        v = version_hijo(v);
+        if(v == NULL) return NULL;
+
+        // Buscamos entre los hermanos el número correcto
+        while(v != NULL && numVersion(v) != num){
+            v = version_hermano(v);
+        }
+
+        if(v == NULL) return NULL;
+
+        path = strtok(NULL,".");
+    }
+
+    return v;
+}
+
+nodoV buscarPadre(Archivo a,char * version){
+    char * padre= new char [strlen(version)+1]; //+1 por el caracter vacio 
+    int pos=0, aca=-1;   
+    while(version[pos]!='\0'){
+        if(version[pos]=='.'){
+            aca=pos;// va a marcar el ultimo elemento donde encuentre el punto
+        }
+        pos++;       
+    }
+    if(aca=-1){ //si no tiene punto no tiene padre "estoy en alguna raiz"
+        delete [] padre;
+        return NULL;
+    }
+
+    padre=strcpy(padre,version);
+    padre[aca]='\0'; //cortamos en el padre de version para trabajar desde aca
+
+    nodoV papa=encontrarVersion(a,padre);// si no es NULL hay padre , si EXISTE despues podemos ver como trabajar desde aca
+    delete [] padre;
+    
+    return papa;
+}
+
+int obtenerUltimoNumero(char *version) {
+    char copia[50];
+    strcpy(copia, version); // hacemos copia porque strtok modifica el string original
+
+    char *token = strtok(copia, ".");
+    int ultimo = atoi(token);
+
+    while (token != NULL) {
+        ultimo = atoi(token);
+        token = strtok(NULL, ".");
+    }
+
+    return ultimo;
+}
+
+nodoV buscarHermanoAnterior(Archivo a, char *version) {
+    //Buscamos el padre de la versión
+    nodoV padre = buscarPadre(a, version);
+    if (padre == NULL)
+        return NULL; // No hay padre => no puede haber hermanos
+
+    //Obtenemos el número de versión actual
+    int numActual = obtenerUltimoNumero(version);
+
+    // Recorremos los hijos del padre para encontrar el hermano anterior
+    nodoV hijo = version_hijo(padre);
+    nodoV anterior = NULL;
+
+    while (hijo != NULL && numVersion(hijo) < numActual) {
+        anterior = hijo;
+        hijo = version_hermano(hijo);
+    }
+
+    //Si no se encontró hermano anterior, retorna NULL
+    return anterior;
 }
