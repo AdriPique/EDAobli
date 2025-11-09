@@ -33,6 +33,13 @@ nodoV nuevo_nodo_v(){
     return v;
 }
 
+nodoV crear_arbol(nodoL l){
+   nodoV aux=nuevo_nodo_v();
+   setter_arbol_version(l, aux);
+   return aux;
+}
+
+
 //Post: devuelve el hermano de una version.
 nodoV version_hermano(nodoV v){
     return v->sh;
