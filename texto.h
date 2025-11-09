@@ -10,3 +10,4 @@ int numerolinea(texto t);
 void linea(texto t,char * &s);
 texto insertar_cambio_historial(nodoV v, int nmr_linea, char* linea_a_insert, int x);
 void imprimir_historial(nodoV v);
+bool textos_iguales(texto t1, texto t2);
