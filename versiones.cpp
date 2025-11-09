@@ -15,7 +15,7 @@ struct nodo_version{
     char* nombre;
     int nivel;      //Para la referencia cuando tratemos el nombre como un array de enteros,opcional tho.
     int numero;
-    texto linea;
+    texto linea;    //Esto es para el texto d euna version
     texto historial;
 };
 
@@ -57,6 +57,18 @@ char* version_nombre(nodoV v){
     return v->nombre;
 }
 
+texto version_linea(nodoV v){
+    return v->linea;
+}
+
+texto version_historial(nodoV v){
+    return v->historial;
+}
+
+void def_version_historial(texto nuevo_hist, nodoV v){
+    v->historial=nuevo_hist;
+}
+
 nodoV borrar_arbol(nodoV v){
 	if(v==NULL){
         return v;
@@ -64,6 +76,7 @@ nodoV borrar_arbol(nodoV v){
         v->ph=borrar_arbol(v->ph);
         v->sh=borrar_arbol(v->sh);
 		eliminar_texto(v->linea);
+        eliminar_texto(v->historial);
         delete v;
         v=NULL;
         return v;

@@ -6,7 +6,7 @@ struct nodo_lista{
 	nodoL siguiente;
 	nodoL anterior;
 	int posicion;
-	nodoV arbolVersion;
+	nodoV raiz_arbol;
 };
 
 nodoL lista_sig(nodoL l){
@@ -14,7 +14,7 @@ nodoL lista_sig(nodoL l){
 }
 
 nodoV get_arbol_version(nodoL l){
-	return l->arbolVersion;
+	return l->raiz_arbol;
 }
 
 
@@ -24,7 +24,7 @@ int posicion_lista(nodoL l){
 
 void imprimir_arboles(nodoL l){
     while (l!=nullptr){
-        imprimir_versiones(l->arbolVersion);
+        imprimir_versiones(l->raiz_arbol);
         l=l->siguiente;
     }
 }

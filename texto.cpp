@@ -1,4 +1,5 @@
 #include "texto.h"
+#include "versiones.h"
 #include <iostream>
 using namespace std;
 #include <string.h>
@@ -9,6 +10,7 @@ struct nodo_texto{
     char* linea;
     texto sig_linea;
     texto ant_linea;
+    string insert_o_borr;
 };
 
 texto nuevo_nodo_texto(){
@@ -45,12 +47,14 @@ int contador_lineas(texto v){
 }
 
 //POS: Inserta una linea nueva en una posicion estipulada.
-void insertar(texto &t, int nmr_linea, char* linea_a_insert){
+void insertar(texto &t, int nmr_linea, char* linea_a_insert, nodoV v){
      texto auxT=new nodo_texto;
      auxT->linea=strdup (linea_a_insert);
      auxT->num_linea=nmr_linea;
      auxT->ant_linea=NULL;
      auxT->sig_linea=NULL;
+     insertar_cambio_historial(v, nmr_linea, linea_a_insert, 0);
+
 
     if (t==NULL){
         t=auxT;
@@ -87,9 +91,41 @@ void insertar(texto &t, int nmr_linea, char* linea_a_insert){
     
 }
 
+//POS: Inserta una linea en la ultima posicion del historial de una version con el cambio realizado, ya sea eliminar o insertar linea.
+texto insertar_cambio_historial(nodoV v, int nmr_linea, char* linea_a_insert, int x){
+    texto auxH=new nodo_texto;
+    auxH->linea=strdup (linea_a_insert);
+    auxH->num_linea=nmr_linea;
+    auxH->ant_linea=NULL;
+    auxH->sig_linea=NULL;
+    texto aux= version_historial(v);
+    if (x==0){
+        auxH->insert_o_borr= "IL";
+    } else {
+        auxH->insert_o_borr= "BL";
+    }
+    if (aux==NULL){
+        def_version_historial(auxH, v);
+    } else{
+        while(aux->sig_linea!=NULL){
+            aux=aux->sig_linea;
+        }
+        aux->sig_linea=auxH;
+        auxH->ant_linea=aux;
+    }
+}
+
+void imprimir_historial(nodoV v){
+    texto aux= version_historial(v);
+    while(aux!=NULL){
+        cout << aux->insert_o_borr << "    " << aux->num_linea << "    " << aux->linea << endl;
+        aux= aux->sig_linea;
+    }
+}
 
 //POS: Elimina una línea específica del texto, corrigiendo la posicion del resto.
-void eliminar_linea(texto t, int nmr_linea){
+void eliminar_linea(texto t , int nmr_linea, nodoV v){
+    insertar_cambio_historial(v, nmr_linea, t->linea, 1);
     texto aux=t;
     if (t->sig_linea==NULL){
         delete t;

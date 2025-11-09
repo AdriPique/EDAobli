@@ -126,7 +126,9 @@ TipoRet BorrarLinea(Archivo &a, char * version, unsigned int nroLinea, char * er
 			cout << error << endl;
 			return ERROR;
 		} else {
-			eliminar_linea(version_texto(aux), nroLinea);	
+			texto a_borrar=version_texto(aux);
+			eliminar_linea(a_borrar, nroLinea, aux);
+				
 			return OK;
 		}
 	}
@@ -154,34 +156,16 @@ TipoRet MostrarCambios(Archivo a, char * version){
         return ERROR;
     }
 
-    cout << a->nombre << " - " << aux->nombre << endl << endl;
+    cout << a->nombre << " - " << version_nombre(aux) << endl << endl;
 
     // Si no hay texto asociado ni modificaciones
-    if (aux->linea == NULL) {
+    if (version_linea(aux) == NULL) {
         cout << "No se realizaron modificaciones" << endl;
         return OK;
-    }
-
-    // Como todavía no hay estructura de seguimiento de cambios (solo el texto final),
-    // mostramos todas las líneas como inserciones locales (IL) para testeo del flujo.
-    texto t = aux->linea;
-	int num= numerolinea(t);
-	char *s=new(char); 
-	linea(t,s);
-    if (t == NULL) {
-        cout << "No se realizaron modificaciones" << endl;
     } else {
-        while (t != NULL) {
-            cout << "IL\t" << num << "\t" << s << endl;
-             t = siguientelinea(t); 
-			 num=numerolinea(t);
-			 linea(t,s);
-
-        }
-    }
-
-    return OK;
-
+		imprimir_historial(aux);
+    	return OK;
+	}
 }
 
 
