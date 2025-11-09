@@ -118,7 +118,8 @@ texto insertar_cambio_historial(nodoV v, int nmr_linea, char* linea_a_insert, in
 void imprimir_historial(nodoV v){
     texto aux= version_historial(v);
     while(aux!=NULL){
-        
+        cout << aux->insert_o_borr << "    " << aux->num_linea << "    " << aux->linea << endl;
+        aux= aux->sig_linea;
     }
 }
 

@@ -162,12 +162,10 @@ TipoRet MostrarCambios(Archivo a, char * version){
     if (version_linea(aux) == NULL) {
         cout << "No se realizaron modificaciones" << endl;
         return OK;
-    }
-
-    
-
-    return OK;
-
+    } else {
+		imprimir_historial(aux);
+    	return OK;
+	}
 }
 
 
