@@ -1,12 +1,17 @@
 #include "archivo.h"
 #include "texto.h"
 typedef struct nodo_version* nodoV;
+typedef struct nodo_lista* nodoL;
+
 nodoV nuevo_nodo_v();
+
 //Elimina todos los nodos de un arbol y libera toda la memoria.
 nodoV borrar_arbol(nodoV v);
-//Retorna un puntero a la version estipulada o a null si no existe.
-nodoV encontrar_version(Archivo a, char* version);
 
+//Retorna un puntero a la version estipulada o a null si no existe.
+
+
+bool esRaiz(char *version) ;
 
 //Retorna el hermano de un nodo.
 nodoV version_hermano(nodoV v);
@@ -45,3 +50,7 @@ int obtenerUltimoNumero(char *version);
 nodoV buscarHermanoAnterior(Archivo a, char *version);
 
 nodoV encontrarVersion (Archivo a, char * version );
+
+nodoV crear_arbol(nodoL l, char* version, int numero);
+
+void def_version_texto(texto nuevo_texto, nodoV v);

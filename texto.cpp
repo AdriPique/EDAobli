@@ -100,9 +100,9 @@ texto insertar_cambio_historial(nodoV v, int nmr_linea, char* linea_a_insert, in
     auxH->sig_linea=NULL;
     texto aux= version_historial(v);
     if (x==0){
-        auxH->insert_o_borr= "IL";
+        auxH->insert_o_borr= strdup("IL");
     } else {
-        auxH->insert_o_borr= "BL";
+        auxH->insert_o_borr= strdup("BL");
     }
     if (aux==NULL){
         def_version_historial(auxH, v);
@@ -113,6 +113,7 @@ texto insertar_cambio_historial(nodoV v, int nmr_linea, char* linea_a_insert, in
         aux->sig_linea=auxH;
         auxH->ant_linea=aux;
     }
+    return NULL;
 }
 
 void imprimir_historial(nodoV v){
@@ -124,43 +125,68 @@ void imprimir_historial(nodoV v){
 }
 
 //POS: Elimina una línea específica del texto, corrigiendo la posicion del resto.
-void eliminar_linea(texto t , int nmr_linea, nodoV v){
-    insertar_cambio_historial(v, nmr_linea, t->linea, 1);
-    texto aux=t;
-    if (t->sig_linea==NULL){
-        delete t;
-        t=NULL;
-    } else {
-    if(nmr_linea==1){
-        t=t->sig_linea;
-        t->ant_linea=NULL;
+// texto.h  -> void eliminar_linea(texto &t, int nmr_linea, nodoV v);
+
+// texto.h  -> void eliminar_linea(texto &t, int nmr_linea, nodoV v);
+
+void eliminar_linea(texto &t, int nmr_linea, nodoV v) {
+    if (t == NULL) return;
+
+    // Buscar la línea a eliminar
+    texto aux = t;
+    while (aux != NULL && aux->num_linea != nmr_linea) {
+        aux = aux->sig_linea;
+    }
+    if (aux == NULL) return; // no existe
+
+    // Guardar en historial la línea real antes de borrarla
+    if (aux->linea != NULL)
+        insertar_cambio_historial(v, nmr_linea, aux->linea, 1);
+
+    // Si solo hay una línea
+    if (aux->ant_linea == NULL && aux->sig_linea == NULL) {
+        free(aux->linea);
         delete aux;
-        aux=t;
-    } else {
-        while(nmr_linea!=aux->num_linea){
-            aux=aux->sig_linea;
-        }
-        texto aux2=aux;
-            if(aux->sig_linea!=NULL){
-                aux->ant_linea->sig_linea=aux->sig_linea;
-                aux->sig_linea->ant_linea=aux->ant_linea;
-                aux=aux->sig_linea;
-                delete aux2;
-            } else {
-                aux->ant_linea->sig_linea=NULL;
-                delete aux;
-            }
-        }
-     while(aux!=NULL){
-            aux->num_linea--;
-            aux=aux->sig_linea;
-        }
+        t = NULL;
+        return;
+    }
+
+    // Si es la primera línea
+    if (aux->ant_linea == NULL) {
+        t = aux->sig_linea;
+        t->ant_linea = NULL;
+        def_version_texto(t, v);
+    }
+    // Si es la última línea
+    else if (aux->sig_linea == NULL) {
+        aux->ant_linea->sig_linea = NULL;
+    }
+    // Si es del medio
+    else {
+        aux->ant_linea->sig_linea = aux->sig_linea;
+        aux->sig_linea->ant_linea = aux->ant_linea;
+    }
+
+    // Liberar la cadena y el nodo
+    free(aux->linea);
+    delete aux;
+
+    // Reenumerar todas las líneas desde el inicio (t)
+    texto recorrer = t;
+    int i = 1;
+    while (recorrer != NULL) {
+        recorrer->num_linea = i++;
+        recorrer = recorrer->sig_linea;
     }
 }
 
+
+
+
+
 //POS:Elimina todo el texto de una version.
 //PRE: Puntero al primer elemento de la lista de texto.
-void eliminar_texto(texto t){
+void eliminar_texto(texto &t){
     texto aux=t;
     while(t!=NULL){
         t=t->sig_linea;
@@ -176,9 +202,8 @@ texto siguientelinea(texto t){
 int  numerolinea(texto t){
     return t-> num_linea;
 }
-void linea(texto t,char * &s){
-    char *s=new(char); 
-    s=t->linea;
+void linea(texto t,char * &s){ 
+    s=strdup(t->linea);
     
 }
 

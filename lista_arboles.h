@@ -1,5 +1,5 @@
-typedef struct nodo_lista* nodoL;
 #include "versiones.h"
+typedef struct nodo_lista* nodoL;
 
 
 //Devuleve el siguiente elemento de una lista
@@ -17,3 +17,5 @@ void imprimir_arboles(nodoL l);
 void setter_arbol_version(nodoL &l, nodoV v);
 
 bool existe_numero(Archivo a, int x);
+
+nodoL crear_nodo_l(Archivo &a, char* version);

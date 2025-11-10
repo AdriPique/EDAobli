@@ -33,8 +33,11 @@ nodoV nuevo_nodo_v(){
     return v;
 }
 
-nodoV crear_arbol(nodoL l){
+nodoV crear_arbol(nodoL l, char* version, int numero){
    nodoV aux=nuevo_nodo_v();
+   aux->nivel=1;
+   aux->nombre=version;
+    aux->numero=numero;
    setter_arbol_version(l, aux);
    return aux;
 }
@@ -86,7 +89,8 @@ nodoV borrar_arbol(nodoV v){
     } else {
         v->ph=borrar_arbol(v->ph);
         v->sh=borrar_arbol(v->sh);
-		eliminar_texto(v->linea);
+        texto aux=v->linea;
+        eliminar_texto(aux);
         eliminar_texto(v->historial);
         delete v;
         v=NULL;
@@ -94,7 +98,7 @@ nodoV borrar_arbol(nodoV v){
     }
 }
 
-nodoV encontrar_version(Archivo a, char* version){
+/*nodoV encontrar_version(Archivo a, char* version){
     //Pre: Saber que la version que queremos trabajar no es la primera 
     //Post: Si existe version te devuelve la version en la que queremos trabajar
     //Si no existe te devuelve null 
@@ -149,7 +153,7 @@ nodoV encontrar_version(Archivo a, char* version){
 	} 
 	}    
 }
-
+*/
 //Pos: Recorre un arbol finitario e imprime todas los nombres de sus nodos.
 //Pre: arbol no vacío, puntero al primer elemento del arbol
 void imprimir_versiones(nodoV v){
@@ -165,6 +169,10 @@ void imprimir_versiones(nodoV v){
     }
 }
 
+bool esRaiz(char *version) {
+    // Si la versión NO contiene un punto, es raíz
+    return (strchr(version, '.') == NULL);
+}
 nodoV encontrarVersion (Archivo a, char * version ){
     bool existe = true;
     char * path = strtok(version,".");
@@ -267,4 +275,8 @@ nodoV buscarHermanoAnterior(Archivo a, char *version) {
 
     //Si no se encontró hermano anterior, retorna NULL
     return anterior;
+}
+
+void def_version_texto(texto nuevo_texto, nodoV v) {
+    v->linea = nuevo_texto;
 }

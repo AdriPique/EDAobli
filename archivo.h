@@ -6,10 +6,12 @@
 //
 // archivo.h
 // Modulo de especificacion de archivo.
-
+#include "lista_arboles.h"
 #include "definiciones.h"//adas
 typedef struct nodo_archivo* Archivo;
 typedef struct nodo_version* nodoV; 
+typedef struct nodo_lista* nodoL;
+
 
 Archivo CrearArchivo(char * nombre);
 // Crea el archivo con el nombre especificado y lo inicializa sin contenido (vacío).
@@ -37,7 +39,7 @@ TipoRet MostrarVersiones(Archivo a);
 // FORMATO: En primer lugar muestra el nombre del archivo. Después de una línea en blanco lista todos las versiones del archivo
 // ordenadas por nivel jerárquico e indentadas según muestra el ejemplo publicado en la letra (cada nivel está indentado por un tabulador).
 
-TipoRet InsertarLinea(Archivo &a, char * version, char * linea, unsigned int nroLinea, char * error);
+TipoRet InsertarLinea(Archivo &a, char* version, char* linea, unsigned int nroLinea, char* error);
 // Esta función inserta una linea de texto a la version parámetro en la posición nroLinea.
 // El número de línea debe estar entre 1 y n+1, siendo n la cantidad de líneas del archivo. Por ejemplo, si el texto tiene 7 líneas, se podráinsertar en las posiciones 1 (al comienzo) a 8 (al final).
 // Si se inserta en un número de línea existente, ésta y las siguientes líneas se correrán hacia adelante (abajo) dejando el espacio para la nueva línea.
@@ -67,5 +69,7 @@ TipoRet VersionIndependiente(Archivo &a, char * version);
 
 //retorna el Bosque de un archivo (lista de arboles).
 nodoL obtener_bosque(Archivo a);
+
+void set_bosque(Archivo a, nodoL l);
 
 #endif
