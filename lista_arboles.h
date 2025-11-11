@@ -21,4 +21,6 @@ bool existe_numero(Archivo a, int x);
 nodoL crear_nodo_l(Archivo &a, char* version);
 void Set_posicion_lista (nodoL &l, int x);
 
+void reordenar_lista_raices(Archivo &a);
+
 nodoL lista_ant(nodoL l);

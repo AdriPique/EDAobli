@@ -49,38 +49,88 @@ bool existe_numero(Archivo a, int x){
     return false;
 }
 
-
 nodoL crear_nodo_l(Archivo &a, char* version){
-	int pos= atoi(version);
-	nodoL aux;
-	nodoL lista = obtener_bosque(a);
-	aux=new nodo_lista;
-	aux->anterior=nullptr;
-	aux->siguiente=nullptr;
-	aux->posicion=pos;
-	if(lista==NULL){
-		set_bosque(a,aux);
-		nodoV aux2=crear_arbol(aux, version, pos);
-		return aux;
-	} else {
-		while(lista!=NULL){
-			if(lista->posicion==pos-1){
-				lista->siguiente=aux;
-				aux->anterior=lista;
-				nodoV aux2=crear_arbol(aux, version, pos);
-				return aux;
-			} else {
-				lista=lista->siguiente;
-			}
-		}
-		cout << "NO existe la version anterior" << endl;
-		delete aux;
-		return NULL;
-	}
+    int pos = atoi(version);
+
+    nodoL nuevo = new nodo_lista;
+    nuevo->anterior = nullptr;
+    nuevo->siguiente = nullptr;
+    nuevo->posicion = pos;
+
+    nodoL lista = obtener_bosque(a);
+
+    // Lista vacía
+    if (lista == NULL){
+        if (pos != 1){
+            cout << "NO existe la version anterior" << endl;
+            delete nuevo;
+            return NULL;
+        }
+        set_bosque(a, nuevo);
+        crear_arbol(nuevo, version, pos);
+        return nuevo;
+    }
+
+    // Inserción al comienzo (pos == 1) con lista NO vacía
+    if (pos == 1){
+        nuevo->siguiente = lista;
+        lista->anterior  = nuevo;
+        set_bosque(a, nuevo);
+        crear_arbol(nuevo, version, pos);
+        return nuevo;
+    }
+
+    // Buscar nodo con posicion == pos-1 para insertar después
+    nodoL it = lista;
+    while (it != NULL && posicion_lista(it) != pos - 1){
+        it = lista_sig(it);
+    }
+
+    if (it == NULL){
+        cout << "NO existe la version anterior" << endl;
+        delete nuevo;
+        return NULL;
+    }
+
+    // Insertar después de 'it'
+    nuevo->siguiente = lista_sig(it);
+    nuevo->anterior  = it;
+    if (lista_sig(it) != NULL) lista_sig(it)->anterior = nuevo;
+    it->siguiente = nuevo;
+
+    crear_arbol(nuevo, version, pos);
+    return nuevo;
 }
 
 
+void reordenar_lista_raices(Archivo &a)
+{
+    nodoL lista = obtener_bosque(a);
+    if (!lista) return;
 
+    bool cambio;
+    do {
+        cambio = false;
+        nodoL it = lista;
+
+        while (it && lista_sig(it)) {
+            nodoL nxt = lista_sig(it);
+            if (posicion_lista(it) > posicion_lista(nxt)) {
+                // swap de datos en los nodos (sin relinkear punteros)
+                int tmpPos = posicion_lista(it);
+                Set_posicion_lista(it, posicion_lista(nxt));
+                Set_posicion_lista(nxt, tmpPos);
+
+                nodoV tmpV = get_arbol_version(it);
+                setter_arbol_version(it, get_arbol_version(nxt));
+                setter_arbol_version(nxt, tmpV);
+
+                cambio = true;
+            }
+            it = lista_sig(it);
+        }
+    } while (cambio);
+}
 
 
 void Set_posicion_lista (nodoL &l, int x){

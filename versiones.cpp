@@ -401,27 +401,6 @@ bool corrimientoHijos(nodoV padre, int k)
 
     return true;
 }
-bool corrimientoRaices(Archivo &a, char* version)
-{
-    int k = atoi(version);
-    nodoL it = obtener_bosque(a);
-
-    while (it) {
-        if (posicion_lista(it) >= k) {
-            int viejoNum = posicion_lista(it);
-            int nuevoNum = viejoNum + 1;
-            
-            Set_posicion_lista(it, nuevoNum);
-            char viejo[32], nuevo[32];
-            sprintf(viejo, "%d", viejoNum);
-            sprintf(nuevo, "%d", nuevoNum);
-
-            renombrar_prefijo_subarbol(get_arbol_version(it), viejo, nuevo);
-        }
-        it = lista_sig(it);
-    }
-    return true;
-}
 
 nodoV insertarSubversionNueva(nodoV padre, char* version)
 {
@@ -447,5 +426,32 @@ bool verificarHuecoHermano(nodoV padre, int k)
     return true;
 }
 
+// Patch for corrimientoRaices in versiones.cpp
+bool corrimientoRaices(Archivo &a, char* version)
+{
+    int k = atoi(version);
+    nodoL it = obtener_bosque(a);
+
+    while (it) {
+        if (posicion_lista(it) >= k) {
+            int viejoNum = posicion_lista(it);
+            int nuevoNum = viejoNum + 1;
+
+            Set_posicion_lista(it, nuevoNum);
+
+            char viejo[32], nuevo[32];
+            sprintf(viejo, "%d", viejoNum);
+            sprintf(nuevo, "%d", nuevoNum);
+
+            renombrar_prefijo_subarbol(get_arbol_version(it), viejo, nuevo);
+        }
+        it = lista_sig(it);
+    }
+
+    // Ensure physical reorder
+    reordenar_lista_raices(a);
+
+    return true;
+}
 
 

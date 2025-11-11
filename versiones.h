@@ -60,7 +60,9 @@ bool existeRaiz(Archivo a, char* version) ;
 bool padreRaizValido(Archivo a, char* version) ;
 bool crearRaiz(Archivo &a, char* version) ;
 bool corrimientoHijos(nodoV padre, int k);
-bool corrimientoRaices(Archivo &a, char* version);
+//bool corrimientoRaices(Archivo &a, char* version);
 nodoV insertarSubversionNueva(nodoV padre, char* version);
 bool verificarHuecoHermano(nodoV padre, int k);
 void renombrar_prefijo_subarbol(nodoV v, const char* viejo, const char* nuevo) ;
+bool corrimientoRaices(Archivo &a, char* version);
+
