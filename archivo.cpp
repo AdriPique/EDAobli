@@ -65,47 +65,93 @@ TipoRet BorrarArchivo(Archivo &a){
 }
 
 
-TipoRet CrearVersion(Archivo &a, char* version, char* mensaje_error) {
-    if (version == nullptr || version[0] == '\0') {
-        mensaje_error = strdup("Versión vacía.");
+TipoRet CrearVersion(Archivo &a, char* version, char* error)
+{
+    if (version == NULL || version[0] == '\0') {
+        error = strdup("Versión vacía.");
         return ERROR;
     }
 
-    // Copias defensivas por si alguna rutina usa strtok/atoi
+    // Copia defensiva
     char v1[128]; strncpy(v1, version, sizeof(v1)); v1[sizeof(v1)-1] = '\0';
     char v2[128]; strncpy(v2, version, sizeof(v2)); v2[sizeof(v2)-1] = '\0';
 
-    // 0) No duplicados
-    if (encontrarVersion(a, v1) != NULL) {
-        mensaje_error = strdup("La versión ya existe.");
+    bool esRaizVer = esRaiz(v1);
+
+    // → Raíces NO tienen padre
+    if (esRaizVer) {
+
+        // ¿Existe raíz igual? → corresponde corrimiento en lista de raíces
+        if (existeRaiz(a, v1)) {
+
+            if (!corrimientoRaices(a, v1)) {
+                error = strdup("No fue posible desplazar raíces.");
+                return ERROR;
+            }
+
+            // Ahora se crea normalmente al final del corrimiento
+            if (!crearRaiz(a, v2)) {
+                error = strdup("No se pudo crear la raíz.");
+                return ERROR;
+            }
+        }
+        else {
+            // Verificar que no haya “hueco” → versión 3 no si falta 2
+            if (!padreRaizValido(a, v1)) {
+                error = strdup("No existe raíz anterior.");
+                return ERROR;
+            }
+
+            if (!crearRaiz(a, v2)) {
+                error = strdup("No se pudo crear la raíz.");
+                return ERROR;
+            }
+        }
+
+        return OK;
+    }
+	// → SUBVERSIÓN
+    nodoV padre = buscarPadre(a, v2);
+    if (padre == NULL) {
+        error = strdup("El padre no existe.");
         return ERROR;
     }
 
-    // 1) Raíz (sin '.'): delegar al módulo de bosque/lista
-    if (esRaiz(v1)) {
-        nodoL res = crear_nodo_l(a, v2);  // inserta raíz si existe la anterior
-        if (res == NULL) {
-            mensaje_error = strdup("No existe la versión raíz anterior (hueco).");
+    // ¿Existe esta subversión?
+    nodoV existe = encontrarVersion(a, v1);
+
+    int numeroNuevo = obtenerUltimoNumero(v1);
+
+    // Si existe → corrimiento
+    if (existe != NULL) {
+
+        if (!corrimientoHijos(padre, numeroNuevo)) {
+            error = strdup("No se pudo desplazar hermanos.");
             return ERROR;
         }
+
+        // Crear nueva subversión en posición que quedó libre
+        if (insertarSubversionNueva(padre, v2) == NULL) {
+            error = strdup("Error al crear nueva subversión.");
+            return ERROR;
+        }
+
         return OK;
     }
 
-    // 2) Subversión: buscar padre y delegar al módulo de versiones
-    nodoV padre = buscarPadre(a, v2);
-    if (padre == NULL) {
-        mensaje_error = strdup("El padre no existe.");
+    // No existe → alta normal
+    if (!verificarHuecoHermano(padre, numeroNuevo)) {
+        error = strdup("Hueco en hermanos.");
         return ERROR;
     }
 
-    if (!insertar_subversion(padre, v2)) {
-        mensaje_error = strdup("No se pudo insertar: hueco en hermanos o ya existe.");
+    if (insertarSubversionNueva(padre, v2) == NULL) {
+        error = strdup("Error al crear la versión.");
         return ERROR;
     }
 
     return OK;
 }
-
 
 
 

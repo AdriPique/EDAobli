@@ -55,3 +55,12 @@ bool insertar_subversion(nodoV padre,  char* version) ;
  nodoV insertar_lista_arboles(nodoV padre, char* version);
 
 void imprimir_versiones_por_nivel(nodoV v, int nivel);
+
+bool existeRaiz(Archivo a, char* version) ;
+bool padreRaizValido(Archivo a, char* version) ;
+bool crearRaiz(Archivo &a, char* version) ;
+bool corrimientoHijos(nodoV padre, int k);
+bool corrimientoRaices(Archivo &a, char* version);
+nodoV insertarSubversionNueva(nodoV padre, char* version);
+bool verificarHuecoHermano(nodoV padre, int k);
+void renombrar_prefijo_subarbol(nodoV v, const char* viejo, const char* nuevo) ;

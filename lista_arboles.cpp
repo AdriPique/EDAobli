@@ -33,9 +33,8 @@ nodoV get_arbol_version(nodoL l){
 int posicion_lista(nodoL l){
 	return l->posicion;
 }
-
 void imprimir_arboles(nodoL l){
-    while (l!=nullptr){
+	while (l!=nullptr){
         imprimir_versiones(l->raiz_arbol);
         l=l->siguiente;
     }
@@ -81,3 +80,9 @@ nodoL crear_nodo_l(Archivo &a, char* version){
 }
 
 
+
+
+
+void Set_posicion_lista (nodoL &l, int x){
+	l->posicion=x;
+}

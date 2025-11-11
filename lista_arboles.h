@@ -19,5 +19,6 @@ void setter_arbol_version(nodoL &l, nodoV v);
 bool existe_numero(Archivo a, int x);
 
 nodoL crear_nodo_l(Archivo &a, char* version);
+void Set_posicion_lista (nodoL &l, int x);
 
 nodoL lista_ant(nodoL l);

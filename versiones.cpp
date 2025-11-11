@@ -332,25 +332,17 @@ void imprimir_versiones_por_nivel(nodoV v, int nivel){
     imprimir_versiones_por_nivel(version_hermano(v), nivel);
 }
 
-
-
-/*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+bool existeRaiz(Archivo a, char* version) {
+    int num = atoi(version);
+    return existe_numero(a, num);
+}
+bool padreRaizValido(Archivo a, char* version) {
+    int num = atoi(version);
+    return (num == 1 || existe_numero(a, num - 1));
+}
+bool crearRaiz(Archivo &a, char* version) {
+    return crear_nodo_l(a, version) != NULL;
+}
 
 void renombrar_prefijo_subarbol(nodoV v, const char* viejo, const char* nuevo) {
     if (v == NULL) return;
@@ -376,154 +368,84 @@ void renombrar_prefijo_subarbol(nodoV v, const char* viejo, const char* nuevo) {
     renombrar_prefijo_subarbol(version_hermano(v), viejo, nuevo);
 }
 
+bool corrimientoHijos(nodoV padre, int k)
+{
+    nodoV h = version_hijo(padre);
 
-
-
-
-nodoV corrimiento_hacia_hijos(nodoV padre, int k) {
-    if (padre == NULL) return NULL;
-
-    nodoV prev = NULL;
-    nodoV cur  = version_hijo(padre);
-    while (cur && numVersion(cur) < k) {
-        prev = cur;
-        cur = version_hermano(cur);
-    }
-
-    nodoV nuevo = nuevo_nodo_v();
-    char nombre[64];
-    sprintf(nombre, "%s.%d", version_nombre(padre), k);
-    nuevo->numero = k;
-    nuevo->nombre = strdup(nombre);
-    nuevo->padre  = padre;
-
-    if (prev == NULL) {
-        nuevo->sh = version_hijo(padre);
-        padre->ph = nuevo;
-    } else {
-        nuevo->sh = prev->sh;
-        prev->sh = nuevo;
-    }
-
-    nuevo->ph = cur;
-    if (cur != NULL) {
-        nodoV it = cur;
-        while (it) {
-            it->padre = nuevo;
-            it = version_hermano(it);
-        }
-    }
-
-    // Renumerar y renombrar hijos del nuevo nodo
-    int nuevoNum = 1;
-    nodoV h = nuevo->ph;
     while (h) {
-        int viejo = numVersion(h);
-        char viejoPref[64], nuevoPref[64];
-        sprintf(viejoPref, "%s.%d", version_nombre(padre), viejo);
-        sprintf(nuevoPref, "%s.%d.%d", version_nombre(padre), k, nuevoNum);
+        if (numVersion(h) >= k) {
 
-        h->numero = nuevoNum;
-        free(h->nombre);
-        h->nombre = strdup(nuevoPref);
+            int oldNum = numVersion(h);
+            int newNum = oldNum + 1;
 
-        char viejoSub[80], nuevoSub[80];
-        sprintf(viejoSub, "%s.", viejoPref);
-        sprintf(nuevoSub, "%s.", nuevoPref);
-        renombrar_prefijo_subarbol(version_hijo(h), viejoSub, nuevoSub);
+            // cambiar número
+            h->numero = newNum;
 
+            // renombrar
+            char viejo[64], nuevo[64];
+            sprintf(viejo, "%s.%d", version_nombre(padre), oldNum);
+            sprintf(nuevo, "%s.%d", version_nombre(padre), newNum);
+
+            free(h->nombre);
+            h->nombre = strdup(nuevo);
+
+            // actualizar descendientes
+            char viejoPref[80], nuevoPref[80];
+            sprintf(viejoPref, "%s.", viejo);
+            sprintf(nuevoPref, "%s.", nuevo);
+
+            renombrar_prefijo_subarbol(version_hijo(h), viejoPref, nuevoPref);
+        }
         h = version_hermano(h);
-        nuevoNum++;
     }
 
-    return nuevo;
+    return true;
+}
+bool corrimientoRaices(Archivo &a, char* version)
+{
+    int k = atoi(version);
+    nodoL it = obtener_bosque(a);
+
+    while (it) {
+        if (posicion_lista(it) >= k) {
+            int viejoNum = posicion_lista(it);
+            int nuevoNum = viejoNum + 1;
+            
+            Set_posicion_lista(it, nuevoNum);
+            char viejo[32], nuevo[32];
+            sprintf(viejo, "%d", viejoNum);
+            sprintf(nuevo, "%d", nuevoNum);
+
+            renombrar_prefijo_subarbol(get_arbol_version(it), viejo, nuevo);
+        }
+        it = lista_sig(it);
+    }
+    return true;
 }
 
-void corrimiento_raices_hacia_hijos(Archivo a, int k) {
-    if (a == NULL || k < 1) return;
-
-    nodoL bosque = obtener_bosque(a);
-    nodoL anterior = NULL;
-    nodoL actual = bosque;
-    int pos = 1;
-
-    while (actual && pos < k) {
-        anterior = actual;
-        actual = lista_sig(actual);
-        pos++;
-    }
-
-    // Nueva raíz
-    nodoV nuevaRaiz = nuevo_nodo_v();
-    char nombre[16];
-    sprintf(nombre, "%d", k);
-    nuevaRaiz->numero = k;
-    nuevaRaiz->nombre = strdup(nombre);
-    nuevaRaiz->padre = NULL;
-
-    nodoL nuevoNodoL ;
-    setter_arbol_version(nuevoNodoL , nuevaRaiz);
-    if (anterior == NULL) {
-        bosque= lista_sig(nuevoNodoL);
-        set_bosque(a, nuevoNodoL);
-    } else {
-        nuevoNodoL->sig = anterior->sig;
-        bosque = lista_ant(nuevoNodoL) ;
-        lista_sig(nuevoNodoL);
-        bosque = 
-        anterior->sig = nuevoNodoL;
-    }
-
-    // Mover raíces viejas como hijos del nuevo nodo
-    if (actual != NULL) {
-        nodoV primerHijo = get_arbol_version(actual);
-        nuevaRaiz->ph = primerHijo;
-
-        nodoL it = actual;
-        while (it) {
-            nodoV r = get_arbol_version(it);
-            r->padre = nuevaRaiz;
-            it = lista_sig(it);
-        }
-    }
-
-    // Renombrar hijos del nuevo nivel
-    nodoV h = nuevaRaiz->ph;
-    int nuevoNum = 1;
-    while (h) {
-        int viejo = numVersion(h);
-        char viejoPref[16], nuevoPref[16];
-        sprintf(viejoPref, "%d", viejo);
-        sprintf(nuevoPref, "%d.%d", k, nuevoNum);
-
-        h->numero = nuevoNum;
-        free(h->nombre);
-        h->nombre = strdup(nuevoPref);
-
-        char viejoSub[32], nuevoSub[32];
-        sprintf(viejoSub, "%s.", viejoPref);
-        sprintf(nuevoSub, "%s.", nuevoPref);
-        renombrar_prefijo_subarbol(version_hijo(h), viejoSub, nuevoSub);
-
-        h = version_hermano(h);
-        nuevoNum++;
-    }
+nodoV insertarSubversionNueva(nodoV padre, char* version)
+{
+    return insertar_lista_arboles(padre, version);
 }
- 
 
+bool verificarHuecoHermano(nodoV padre, int k)
+{
+    nodoV h = version_hijo(padre);
+    nodoV ant = NULL;
 
-*/
+    while (h && numVersion(h) < k) {
+        ant = h;
+        h = version_hermano(h);
+    }
 
+    // si ya existe → no es hueco
+    if (h && numVersion(h) == k) return false;
 
+    if (ant == NULL && k != 1) return false;
+    if (ant != NULL && numVersion(ant) != k - 1) return false;
 
-
-
-
-
-
-
-
-
+    return true;
+}
 
 
 
