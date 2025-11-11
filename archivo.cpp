@@ -11,7 +11,7 @@
 #include <string.h>
 #include <iostream>
 using namespace std;
-
+/*
 struct nodo_version{
     nodoV ph;
     nodoV sh;
@@ -22,6 +22,7 @@ struct nodo_version{
     texto linea;    //Esto es para el texto d euna version
     texto historial;
 };
+*/
 
 struct nodo_archivo{
 	char* nombre;
@@ -64,83 +65,47 @@ TipoRet BorrarArchivo(Archivo &a){
 }
 
 
-TipoRet CrearVersion(Archivo &a, char* version, char* error){
-
-    char verA[64], verB[64];
-    strncpy(verA, version, sizeof(verA)); verA[sizeof(verA)-1] = '\0';
-    strncpy(verB, version, sizeof(verB)); verB[sizeof(verB)-1] = '\0';
-
-
-    if (encontrarVersion(a, verA) != NULL){
-        error = strdup("La versión ya existe.");
+TipoRet CrearVersion(Archivo &a, char* version, char* mensaje_error) {
+    if (version == nullptr || version[0] == '\0') {
+        mensaje_error = strdup("Versión vacía.");
         return ERROR;
     }
 
+    // Copias defensivas por si alguna rutina usa strtok/atoi
+    char v1[128]; strncpy(v1, version, sizeof(v1)); v1[sizeof(v1)-1] = '\0';
+    char v2[128]; strncpy(v2, version, sizeof(v2)); v2[sizeof(v2)-1] = '\0';
 
-    if (esRaiz(version)) {
-        // --- RAIZ ---
-        int num = atoi(version);
+    // 0) No duplicados
+    if (encontrarVersion(a, v1) != NULL) {
+        mensaje_error = strdup("La versión ya existe.");
+        return ERROR;
+    }
 
-        if (num > 1) {
-            nodoL l = obtener_bosque(a);
-            bool ok = false;
-            while (l != NULL) {
-                if (posicion_lista(l) == num-1) { ok = true; break; }
-                l = lista_sig(l);
-            }
-            if (!ok) {
-                error = strdup("Hay huecos entre versiones raíz.");
-                return ERROR;
-            }
-        }
-
-        nodoL nuevo = crear_nodo_l(a, version);
-        if (nuevo == NULL){
-            error = strdup("No existe la versión raíz anterior requerida.");
+    // 1) Raíz (sin '.'): delegar al módulo de bosque/lista
+    if (esRaiz(v1)) {
+        nodoL res = crear_nodo_l(a, v2);  // inserta raíz si existe la anterior
+        if (res == NULL) {
+            mensaje_error = strdup("No existe la versión raíz anterior (hueco).");
             return ERROR;
-        }
-        return OK;
-    } else {
-
-        nodoV padre = buscarPadre(a, verB);
-        if (padre == NULL){
-            error = strdup("El padre no existe.");
-            return ERROR;
-        }
-
-        int numNuevo = obtenerUltimoNumero(version);
-
-        if (numNuevo > 1) {
-            char pref[64]; strncpy(pref, version, sizeof(pref)); pref[sizeof(pref)-1]='\0';
-            int j = (int)strlen(pref)-1;
-            while (j>=0 && pref[j] != '.') j--;
-            if (j < 0) { error = strdup("Cadena de versión inválida."); return ERROR; }
-            pref[j+1] = '\0';
-
-            char objetivo[64];
-            snprintf(objetivo, sizeof(objetivo), "%s%d", pref, numNuevo-1);
-
-            if (encontrarVersion(a, objetivo) == NULL){
-                error = strdup("Faltan hermanos previos (hay huecos).");
-                return ERROR;
-            }
-        }
-
-        nodoV nuevo = nuevo_nodo_v();
-        nuevo->nombre = strdup(version);
-        nuevo->numero = numNuevo;
-        nuevo->padre  = padre;
-
-        if (version_hijo(padre) == NULL) {
-            padre->ph = nuevo;
-        } else {
-            nodoV it = version_hijo(padre);
-            while (it->sh != NULL) it = it->sh;
-            it->sh = nuevo;
         }
         return OK;
     }
+
+    // 2) Subversión: buscar padre y delegar al módulo de versiones
+    nodoV padre = buscarPadre(a, v2);
+    if (padre == NULL) {
+        mensaje_error = strdup("El padre no existe.");
+        return ERROR;
+    }
+
+    if (!insertar_subversion(padre, v2)) {
+        mensaje_error = strdup("No se pudo insertar: hueco en hermanos o ya existe.");
+        return ERROR;
+    }
+
+    return OK;
 }
+
 
 
 

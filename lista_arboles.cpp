@@ -16,6 +16,10 @@ nodoL lista_sig(nodoL l){
 	return l->siguiente;
 }
 
+nodoL lista_ant(nodoL l){
+	return l->anterior;
+}
+
 void setter_arbol_version(nodoL &l, nodoV v){
 	l->raiz_arbol=v;
 }
@@ -38,15 +42,14 @@ void imprimir_arboles(nodoL l){
 }
 
 bool existe_numero(Archivo a, int x){
-	nodoL aux=obtener_bosque(a);
-	bool existe=false;
-	while(aux!=nullptr){
-		if(x==aux->posicion){
-			existe=true;
-		}
-	}
-	return existe;
+    nodoL aux = obtener_bosque(a);
+    while (aux != nullptr){
+        if (x == aux->posicion) return true;
+        aux = aux->siguiente;                      
+    }
+    return false;
 }
+
 
 nodoL crear_nodo_l(Archivo &a, char* version){
 	int pos= atoi(version);
@@ -76,4 +79,5 @@ nodoL crear_nodo_l(Archivo &a, char* version){
 		return NULL;
 	}
 }
+
 

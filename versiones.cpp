@@ -331,3 +331,199 @@ void imprimir_versiones_por_nivel(nodoV v, int nivel){
 
     imprimir_versiones_por_nivel(version_hermano(v), nivel);
 }
+
+
+
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void renombrar_prefijo_subarbol(nodoV v, const char* viejo, const char* nuevo) {
+    if (v == NULL) return;
+
+    size_t largoViejo = strlen(viejo);
+
+    // Si el nombre del nodo comienza con el prefijo "viejo"
+    if (strncmp(v->nombre, viejo, largoViejo) == 0) {
+        const char* resto = v->nombre + largoViejo; // parte que sigue después del prefijo viejo
+
+        // Crear nuevo nombre concatenando el prefijo nuevo + resto
+        char* nombreNuevo = (char*)malloc(strlen(nuevo) + strlen(resto) + 1);
+        if (nombreNuevo == NULL) return; // seguridad
+
+        sprintf(nombreNuevo, "%s%s", nuevo, resto);
+
+        free(v->nombre);
+        v->nombre = nombreNuevo;
+    }
+
+    // Renombrar recursivamente los hijos y los hermanos
+    renombrar_prefijo_subarbol(version_hijo(v), viejo, nuevo);
+    renombrar_prefijo_subarbol(version_hermano(v), viejo, nuevo);
+}
+
+
+
+
+
+nodoV corrimiento_hacia_hijos(nodoV padre, int k) {
+    if (padre == NULL) return NULL;
+
+    nodoV prev = NULL;
+    nodoV cur  = version_hijo(padre);
+    while (cur && numVersion(cur) < k) {
+        prev = cur;
+        cur = version_hermano(cur);
+    }
+
+    nodoV nuevo = nuevo_nodo_v();
+    char nombre[64];
+    sprintf(nombre, "%s.%d", version_nombre(padre), k);
+    nuevo->numero = k;
+    nuevo->nombre = strdup(nombre);
+    nuevo->padre  = padre;
+
+    if (prev == NULL) {
+        nuevo->sh = version_hijo(padre);
+        padre->ph = nuevo;
+    } else {
+        nuevo->sh = prev->sh;
+        prev->sh = nuevo;
+    }
+
+    nuevo->ph = cur;
+    if (cur != NULL) {
+        nodoV it = cur;
+        while (it) {
+            it->padre = nuevo;
+            it = version_hermano(it);
+        }
+    }
+
+    // Renumerar y renombrar hijos del nuevo nodo
+    int nuevoNum = 1;
+    nodoV h = nuevo->ph;
+    while (h) {
+        int viejo = numVersion(h);
+        char viejoPref[64], nuevoPref[64];
+        sprintf(viejoPref, "%s.%d", version_nombre(padre), viejo);
+        sprintf(nuevoPref, "%s.%d.%d", version_nombre(padre), k, nuevoNum);
+
+        h->numero = nuevoNum;
+        free(h->nombre);
+        h->nombre = strdup(nuevoPref);
+
+        char viejoSub[80], nuevoSub[80];
+        sprintf(viejoSub, "%s.", viejoPref);
+        sprintf(nuevoSub, "%s.", nuevoPref);
+        renombrar_prefijo_subarbol(version_hijo(h), viejoSub, nuevoSub);
+
+        h = version_hermano(h);
+        nuevoNum++;
+    }
+
+    return nuevo;
+}
+
+void corrimiento_raices_hacia_hijos(Archivo a, int k) {
+    if (a == NULL || k < 1) return;
+
+    nodoL bosque = obtener_bosque(a);
+    nodoL anterior = NULL;
+    nodoL actual = bosque;
+    int pos = 1;
+
+    while (actual && pos < k) {
+        anterior = actual;
+        actual = lista_sig(actual);
+        pos++;
+    }
+
+    // Nueva raíz
+    nodoV nuevaRaiz = nuevo_nodo_v();
+    char nombre[16];
+    sprintf(nombre, "%d", k);
+    nuevaRaiz->numero = k;
+    nuevaRaiz->nombre = strdup(nombre);
+    nuevaRaiz->padre = NULL;
+
+    nodoL nuevoNodoL ;
+    setter_arbol_version(nuevoNodoL , nuevaRaiz);
+    if (anterior == NULL) {
+        bosque= lista_sig(nuevoNodoL);
+        set_bosque(a, nuevoNodoL);
+    } else {
+        nuevoNodoL->sig = anterior->sig;
+        bosque = lista_ant(nuevoNodoL) ;
+        lista_sig(nuevoNodoL);
+        bosque = 
+        anterior->sig = nuevoNodoL;
+    }
+
+    // Mover raíces viejas como hijos del nuevo nodo
+    if (actual != NULL) {
+        nodoV primerHijo = get_arbol_version(actual);
+        nuevaRaiz->ph = primerHijo;
+
+        nodoL it = actual;
+        while (it) {
+            nodoV r = get_arbol_version(it);
+            r->padre = nuevaRaiz;
+            it = lista_sig(it);
+        }
+    }
+
+    // Renombrar hijos del nuevo nivel
+    nodoV h = nuevaRaiz->ph;
+    int nuevoNum = 1;
+    while (h) {
+        int viejo = numVersion(h);
+        char viejoPref[16], nuevoPref[16];
+        sprintf(viejoPref, "%d", viejo);
+        sprintf(nuevoPref, "%d.%d", k, nuevoNum);
+
+        h->numero = nuevoNum;
+        free(h->nombre);
+        h->nombre = strdup(nuevoPref);
+
+        char viejoSub[32], nuevoSub[32];
+        sprintf(viejoSub, "%s.", viejoPref);
+        sprintf(nuevoSub, "%s.", nuevoPref);
+        renombrar_prefijo_subarbol(version_hijo(h), viejoSub, nuevoSub);
+
+        h = version_hermano(h);
+        nuevoNum++;
+    }
+}
+ 
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
