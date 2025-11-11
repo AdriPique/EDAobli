@@ -125,14 +125,11 @@ void imprimir_historial(nodoV v){
 }
 
 //POS: Elimina una línea específica del texto, corrigiendo la posicion del resto.
-// texto.h  -> void eliminar_linea(texto &t, int nmr_linea, nodoV v);
-
-// texto.h  -> void eliminar_linea(texto &t, int nmr_linea, nodoV v);
 
 void eliminar_linea(texto &t, int nmr_linea, nodoV v) {
     if (t == NULL) return;
 
-    // Buscar la línea a eliminar
+
     texto aux = t;
     while (aux != NULL && aux->num_linea != nmr_linea) {
         aux = aux->sig_linea;
@@ -151,27 +148,26 @@ void eliminar_linea(texto &t, int nmr_linea, nodoV v) {
         return;
     }
 
-    // Si es la primera línea
     if (aux->ant_linea == NULL) {
         t = aux->sig_linea;
         t->ant_linea = NULL;
         def_version_texto(t, v);
     }
-    // Si es la última línea
+ 
     else if (aux->sig_linea == NULL) {
         aux->ant_linea->sig_linea = NULL;
     }
-    // Si es del medio
+   
     else {
         aux->ant_linea->sig_linea = aux->sig_linea;
         aux->sig_linea->ant_linea = aux->ant_linea;
     }
 
-    // Liberar la cadena y el nodo
+   
     free(aux->linea);
     delete aux;
 
-    // Reenumerar todas las líneas desde el inicio (t)
+    
     texto recorrer = t;
     int i = 1;
     while (recorrer != NULL) {

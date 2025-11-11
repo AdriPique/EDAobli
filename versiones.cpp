@@ -34,10 +34,10 @@ nodoV nuevo_nodo_v(){
 }
 
 nodoV crear_arbol(nodoL l, char* version, int numero){
-   nodoV aux=nuevo_nodo_v();
-   aux->nivel=1;
-   aux->nombre=version;
-    aux->numero=numero;
+   nodoV aux = nuevo_nodo_v();
+   aux->nivel = 1;
+   aux->nombre = strdup(version);   
+   aux->numero = numero;
    setter_arbol_version(l, aux);
    return aux;
 }
@@ -98,69 +98,12 @@ nodoV borrar_arbol(nodoV v){
     }
 }
 
-/*nodoV encontrar_version(Archivo a, char* version){
-    //Pre: Saber que la version que queremos trabajar no es la primera 
-    //Post: Si existe version te devuelve la version en la que queremos trabajar
-    //Si no existe te devuelve null 
-    cout << version << endl << endl << endl;
-	nodoL pos_lista= obtener_bosque(a);
-	if(pos_lista==NULL){
-		return NULL;
-	} else {
-    while(pos_lista!=NULL && posicion_lista(pos_lista)!=((int)*version-48)){
-		pos_lista=lista_sig(pos_lista);
-	}
-	if(pos_lista==NULL){
-		return NULL;
-	} else {
-	nodoV quiero=get_arbol_version(pos_lista);
-	int i=0;
-	int xd;
-    bool existe= false;
-    char actuall[MAX_NOMBRE];
-	actuall[0]='\0';
-	char* actual=actuall;
-	while(existe == false && version[i]!= '\0'){
-	
-        if(quiero->numero==(int)version[i]-48){//si el numero es igual nos metemos en ese puntero || probando con codigo ASCII 
-            cout << "entre al if uwu " << endl;
-			actuall[i]=quiero->numero+48;
-			actuall[i+1]='\0';
-            i=i+2; // nos paramos en el siguiente valor del string de aux
-            if(strcmp(version, actual)==0){//si actual y version son iguales existe version y cortamo
-                cout << "a ver si son iguales " << endl;
-				existe= true;
-            }
-			actual[i+1]='.';
-        } else if((quiero->sh!=NULL)&&( quiero->sh->numero==version[i]-48)){ //si la version en la que estamos parados tiene un hermano y esta version hermana nos sirve nos movemos
-            cout << "entre al else if 1 " << endl;
-			quiero=quiero->sh;// solo me muevo en sub versiones (hacia la derecha) si el siguiente numero me sirve
 
-        } else if((quiero->ph!=NULL)&& (quiero->ph->numero>=version[i]-48)){//siempre que el hijo sea mayor o igual sigo bajando
-            cout << "entre al else if 2 " << endl;
-			quiero=quiero->ph;
-        }
-        else {
-			cout << "entre al else normal " << endl;
-            i=i+2;//si no existe la version pero sigue habiendo que recorrer el string version lo recorremos 
-        }
-
-    }      
-    if(existe)
-        return quiero;
-    else
-        return NULL;
-	} 
-	}    
-}
-*/
-//Pos: Recorre un arbol finitario e imprime todas los nombres de sus nodos.
-//Pre: arbol no vacío, puntero al primer elemento del arbol
 void imprimir_versiones(nodoV v){
     if(v==NULL){
         
     } else {
-        cout << v->nombre << endl;              //Ver como implementar lo de los espacios por nivel.
+        cout << v->nombre << endl;            
         if(v->sh!=NULL){
             imprimir_versiones(v->sh);
         } else if(v->ph!=NULL){
@@ -170,71 +113,72 @@ void imprimir_versiones(nodoV v){
 }
 
 bool esRaiz(char *version) {
-    // Si la versión NO contiene un punto, es raíz
+    // Si la version no contiene un punto es raiz
     return (strchr(version, '.') == NULL);
 }
-nodoV encontrarVersion (Archivo a, char * version ){
-    bool existe = true;
-    char * path = strtok(version,".");
-    int num = atoi(path);
+nodoV encontrarVersion (Archivo a, char *version ){
+
+    if (a == NULL || version == NULL) return NULL;
+
+   
+    char copia[64];
+    strncpy(copia, version, sizeof(copia));
+    copia[sizeof(copia)-1] = '\0';
+
+  
+    char* tok = strtok(copia, ".");
+    if (tok == NULL) return NULL;
+
+    int num = atoi(tok);
 
     nodoL lista = obtener_bosque(a);
-    nodoV v;
-
-    // Buscar raíz
-    if(lista == NULL){
-        return NULL;
-    }
-
-    while(lista != NULL && posicion_lista(lista) != num){
+    while (lista != NULL && posicion_lista(lista) != num)
         lista = lista_sig(lista);
-    }
 
-    if(lista == NULL)
-        return NULL;
+    if (lista == NULL) return NULL;
 
-    v = get_arbol_version(lista);
+    nodoV v = get_arbol_version(lista);
 
-    // Cada '.' baja un nivel → por cada token bajamos a los hijos
-    path = strtok(NULL,".");
-    while(existe && path != NULL){
-        num = atoi(path);
+   
+    tok = strtok(NULL, ".");
+    while (tok != NULL){
 
-        // Bajamos un nivel
+        num = atoi(tok);
+
+   
         v = version_hijo(v);
-        if(v == NULL) return NULL;
+        if (v == NULL) return NULL;
 
-        // Buscamos entre los hermanos el número correcto
-        while(v != NULL && numVersion(v) != num){
+      
+        while (v != NULL && numVersion(v) != num)
             v = version_hermano(v);
-        }
 
-        if(v == NULL) return NULL;
+        if (v == NULL) return NULL;
 
-        path = strtok(NULL,".");
+        tok = strtok(NULL, ".");
     }
 
     return v;
 }
 
 nodoV buscarPadre(Archivo a,char * version){
-    char * padre= new char [strlen(version)+1]; //+1 por el caracter vacio 
+    char * padre= new char [strlen(version)+1];
     int pos=0, aca=-1;   
     while(version[pos]!='\0'){
         if(version[pos]=='.'){
-            aca=pos;// va a marcar el ultimo elemento donde encuentre el punto
+            aca=pos;
         }
         pos++;       
     }
-    if(aca=-1){ //si no tiene punto no tiene padre "estoy en alguna raiz"
+    if(aca==-1){ 
         delete [] padre;
         return NULL;
     }
 
     padre=strcpy(padre,version);
-    padre[aca]='\0'; //cortamos en el padre de version para trabajar desde aca
+    padre[aca]='\0'; 
 
-    nodoV papa=encontrarVersion(a,padre);// si no es NULL hay padre , si EXISTE despues podemos ver como trabajar desde aca
+    nodoV papa=encontrarVersion(a,padre);
     delete [] padre;
     
     return papa;
@@ -242,7 +186,7 @@ nodoV buscarPadre(Archivo a,char * version){
 
 int obtenerUltimoNumero(char *version) {
     char copia[50];
-    strcpy(copia, version); // hacemos copia porque strtok modifica el string original
+    strcpy(copia, version); 
 
     char *token = strtok(copia, ".");
     int ultimo = atoi(token);
@@ -256,15 +200,15 @@ int obtenerUltimoNumero(char *version) {
 }
 
 nodoV buscarHermanoAnterior(Archivo a, char *version) {
-    //Buscamos el padre de la versión
+
     nodoV padre = buscarPadre(a, version);
     if (padre == NULL)
-        return NULL; // No hay padre => no puede haber hermanos
+    return NULL; 
 
-    //Obtenemos el número de versión actual
+ 
     int numActual = obtenerUltimoNumero(version);
 
-    // Recorremos los hijos del padre para encontrar el hermano anterior
+  
     nodoV hijo = version_hijo(padre);
     nodoV anterior = NULL;
 
@@ -272,11 +216,118 @@ nodoV buscarHermanoAnterior(Archivo a, char *version) {
         anterior = hijo;
         hijo = version_hermano(hijo);
     }
-
-    //Si no se encontró hermano anterior, retorna NULL
     return anterior;
 }
 
 void def_version_texto(texto nuevo_texto, nodoV v) {
     v->linea = nuevo_texto;
+}
+bool insertar_subversion(nodoV padre,  char* version) {
+        int nuevoNum = obtenerUltimoNumero(version);
+    
+        if (padre->ph == NULL) {
+            nodoV nuevo = nuevo_nodo_v();
+            nuevo->nombre = strdup(version);
+            nuevo->numero = nuevoNum;
+            nuevo->padre = padre;
+            padre->ph = nuevo;
+            return true;
+        }
+    
+        nodoV hijo = padre->ph;
+        nodoV anterior = NULL;
+        while (hijo != NULL && hijo->numero < nuevoNum) {
+            anterior = hijo;
+            hijo = hijo->sh;
+        }
+    
+
+        if ((anterior != NULL && anterior->numero != nuevoNum - 1) ||
+            (anterior == NULL && nuevoNum != 1)) {
+            return false;
+        }
+    
+        nodoV nuevo = nuevo_nodo_v();
+        nuevo->nombre = strdup(version);
+        nuevo->numero = nuevoNum;
+        nuevo->padre = padre;
+        nuevo->sh = hijo;
+    
+        if (anterior == NULL)
+            padre->ph = nuevo;
+        else
+            anterior->sh = nuevo;
+    
+        return true;
+    }
+
+    nodoV insertar_lista_arboles(nodoV padre, char* version) {
+    if (padre == NULL) return NULL;
+
+    int numNuevo = obtenerUltimoNumero((char*)version);
+
+    if (version_hijo(padre) == NULL) {
+        nodoV nuevo = nuevo_nodo_v();
+        nuevo->nombre = strdup(version);
+        nuevo->numero = numNuevo;
+        nuevo->padre = padre;
+        padre->ph = nuevo;
+        cout << "Subversión " << version << " agregada como primer hijo de " << version_nombre(padre) << endl;
+        return nuevo;
+    }
+
+    nodoV actual = version_hijo(padre);
+    nodoV anterior = NULL;
+
+    while (actual != NULL && numVersion(actual) < numNuevo) {
+        anterior = actual;
+        actual = version_hermano(actual);
+    }
+
+    if (actual != NULL && numVersion(actual) == numNuevo) {
+        cout << "Ya existe la subversión " << version << endl;
+        return NULL;
+    }
+
+    if (anterior == NULL && numNuevo != 1) {
+        cout << "No existe la subversión anterior a " << version << endl;
+        return NULL;
+    }
+    if (anterior != NULL && numVersion(anterior) != numNuevo - 1) {
+        cout << "Falta la subversión anterior antes de " << version << endl;
+        return NULL;
+    }
+
+   
+    nodoV nuevo = nuevo_nodo_v();
+    nuevo->nombre = strdup(version);
+    nuevo->numero = numNuevo;
+    nuevo->padre = padre;
+
+    
+    if (anterior == NULL) {
+        nuevo->sh = version_hijo(padre);
+        padre->ph = nuevo;
+    } else {
+        nuevo->sh = anterior->sh;
+        anterior->sh = nuevo;
+    }
+
+    cout << "Subversión " << version << " agregada correctamente." << endl;
+    return nuevo;
+}
+
+void imprimir_versiones_por_nivel(nodoV v, int nivel){
+    if (v == NULL) return;
+
+    // indentación
+    for(int i = 0; i < nivel; i++)
+        cout << '\t';
+
+    cout << v->nombre << endl;
+
+    imprimir_versiones_por_nivel(version_hijo(v), nivel + 1);
+
+
+    imprimir_versiones_por_nivel(version_hermano(v), nivel);
 }

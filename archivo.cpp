@@ -12,6 +12,17 @@
 #include <iostream>
 using namespace std;
 
+struct nodo_version{
+    nodoV ph;
+    nodoV sh;
+	nodoV padre;
+    char* nombre;
+    int nivel;      //Para la referencia cuando tratemos el nombre como un array de enteros,opcional tho.
+    int numero;
+    texto linea;    //Esto es para el texto d euna version
+    texto historial;
+};
+
 struct nodo_archivo{
 	char* nombre;
 	nodoL bosque;
@@ -54,24 +65,83 @@ TipoRet BorrarArchivo(Archivo &a){
 
 
 TipoRet CrearVersion(Archivo &a, char* version, char* error){
-// Crea una nueva versión del archivo si la versión especificada cumple con las siguientes reglas:
-// - El padre de la nueva versión a crear ya debe existir. Por ejemplo, si creo la versión 2.15.1, la versión 2.15 ya debe existir.
-// Las versiones del primer nivel no siguen esta regla, ya que no tienen versión padre.
-// - No pueden quedar “huecos” entre versiones hermanas. Por ejemplo, si creamos la versión 2.15.3, las versiones 2.15.1 y 2.15.2 ya deben existir.
-// Ver ejemplo en la letra.
-	nodoV aux= encontrarVersion(a, version);
-	if (aux==NULL){// si no existe vamo a darle
-		aux=buscarPadre(a,version);
-		if(esRaiz(version)){
-			int num=atoi(version);
-			nodoL lista= crear_nodo_l(a, version);
-			nodoV raiz=crear_arbol(lista,version,num);
+
+    char verA[64], verB[64];
+    strncpy(verA, version, sizeof(verA)); verA[sizeof(verA)-1] = '\0';
+    strncpy(verB, version, sizeof(verB)); verB[sizeof(verB)-1] = '\0';
 
 
-		}
-		}
-	return OK;
+    if (encontrarVersion(a, verA) != NULL){
+        error = strdup("La versión ya existe.");
+        return ERROR;
+    }
+
+
+    if (esRaiz(version)) {
+        // --- RAIZ ---
+        int num = atoi(version);
+
+        if (num > 1) {
+            nodoL l = obtener_bosque(a);
+            bool ok = false;
+            while (l != NULL) {
+                if (posicion_lista(l) == num-1) { ok = true; break; }
+                l = lista_sig(l);
+            }
+            if (!ok) {
+                error = strdup("Hay huecos entre versiones raíz.");
+                return ERROR;
+            }
+        }
+
+        nodoL nuevo = crear_nodo_l(a, version);
+        if (nuevo == NULL){
+            error = strdup("No existe la versión raíz anterior requerida.");
+            return ERROR;
+        }
+        return OK;
+    } else {
+
+        nodoV padre = buscarPadre(a, verB);
+        if (padre == NULL){
+            error = strdup("El padre no existe.");
+            return ERROR;
+        }
+
+        int numNuevo = obtenerUltimoNumero(version);
+
+        if (numNuevo > 1) {
+            char pref[64]; strncpy(pref, version, sizeof(pref)); pref[sizeof(pref)-1]='\0';
+            int j = (int)strlen(pref)-1;
+            while (j>=0 && pref[j] != '.') j--;
+            if (j < 0) { error = strdup("Cadena de versión inválida."); return ERROR; }
+            pref[j+1] = '\0';
+
+            char objetivo[64];
+            snprintf(objetivo, sizeof(objetivo), "%s%d", pref, numNuevo-1);
+
+            if (encontrarVersion(a, objetivo) == NULL){
+                error = strdup("Faltan hermanos previos (hay huecos).");
+                return ERROR;
+            }
+        }
+
+        nodoV nuevo = nuevo_nodo_v();
+        nuevo->nombre = strdup(version);
+        nuevo->numero = numNuevo;
+        nuevo->padre  = padre;
+
+        if (version_hijo(padre) == NULL) {
+            padre->ph = nuevo;
+        } else {
+            nodoV it = version_hijo(padre);
+            while (it->sh != NULL) it = it->sh;
+            it->sh = nuevo;
+        }
+        return OK;
+    }
 }
+
 
 
 TipoRet BorrarVersion(Archivo &a, char * version){
@@ -81,15 +151,30 @@ TipoRet BorrarVersion(Archivo &a, char * version){
 
 	return NO_IMPLEMENTADA;
 }
-
-TipoRet MostrarVersiones(Archivo a){
 // FORMATO: En primer lugar muestra el nombre del archivo. Después de una línea en blanco lista todos las versiones del archivo
 // ordenadas por nivel jerárquico e indentadas según muestra el ejemplo publicado en la letra (cada nivel está indentado por un tabulador).
-	cout << a->nombre << endl << endl;
 
+TipoRet MostrarVersiones(Archivo a){
+    if (a == NULL)
+        return ERROR;
 
+    cout << a->nombre << endl << endl;
 
-	return NO_IMPLEMENTADA;
+    nodoL lista = obtener_bosque(a);
+
+    if (lista == NULL){
+        cout << "(No hay versiones creadas)" << endl;
+        return OK;
+    }
+
+    // recorrer raíces del bosque
+    while (lista != NULL){
+        nodoV raiz = get_arbol_version(lista);
+        imprimir_versiones_por_nivel(raiz, 0);
+        lista = lista_sig(lista);
+    }
+
+    return OK;
 }
 
 TipoRet InsertarLinea(Archivo &a, char* version, char* linea, unsigned int nroLinea, char* error){

@@ -8,9 +8,6 @@ nodoV nuevo_nodo_v();
 //Elimina todos los nodos de un arbol y libera toda la memoria.
 nodoV borrar_arbol(nodoV v);
 
-//Retorna un puntero a la version estipulada o a null si no existe.
-
-
 bool esRaiz(char *version) ;
 
 //Retorna el hermano de un nodo.
@@ -49,8 +46,12 @@ int obtenerUltimoNumero(char *version);
 
 nodoV buscarHermanoAnterior(Archivo a, char *version);
 
-nodoV encontrarVersion (Archivo a, char * version );
+nodoV encontrarVersion(Archivo a, char* version);
 
 nodoV crear_arbol(nodoL l, char* version, int numero);
 
 void def_version_texto(texto nuevo_texto, nodoV v);
+bool insertar_subversion(nodoV padre,  char* version) ;
+ nodoV insertar_lista_arboles(nodoV padre, char* version);
+
+void imprimir_versiones_por_nivel(nodoV v, int nivel);

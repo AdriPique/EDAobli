@@ -76,3 +76,4 @@ nodoL crear_nodo_l(Archivo &a, char* version){
 		return NULL;
 	}
 }
+
