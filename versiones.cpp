@@ -127,7 +127,8 @@ nodoV encontrarVersion (Archivo a, char *version ){
 
   
     char* tok = strtok(copia, ".");
-    if (tok == NULL) return NULL;
+    if (tok == NULL) 
+        return NULL;
 
     int num = atoi(tok);
 
@@ -135,7 +136,8 @@ nodoV encontrarVersion (Archivo a, char *version ){
     while (lista != NULL && posicion_lista(lista) != num)
         lista = lista_sig(lista);
 
-    if (lista == NULL) return NULL;
+    if (lista == NULL) 
+        return NULL;
 
     nodoV v = get_arbol_version(lista);
 
@@ -150,10 +152,11 @@ nodoV encontrarVersion (Archivo a, char *version ){
         if (v == NULL) return NULL;
 
       
-        while (v != NULL && numVersion(v) != num)
+        while (v != NULL && numVersion(v) != num){ //busca al hermano hasta dar con null o su numero
             v = version_hermano(v);
-
-        if (v == NULL) return NULL;
+        }
+        if (v == NULL)
+            return NULL;
 
         tok = strtok(NULL, ".");
     }
@@ -219,9 +222,15 @@ nodoV buscarHermanoAnterior(Archivo a, char *version) {
     return anterior;
 }
 
+
+
 void def_version_texto(texto nuevo_texto, nodoV v) {
     v->linea = nuevo_texto;
 }
+
+
+
+
 bool insertar_subversion(nodoV padre,  char* version) {
         int nuevoNum = obtenerUltimoNumero(version);
     
@@ -259,9 +268,11 @@ bool insertar_subversion(nodoV padre,  char* version) {
             anterior->sh = nuevo;
     
         return true;
-    }
+}
 
-    nodoV insertar_lista_arboles(nodoV padre, char* version) {
+
+
+nodoV insertar_lista_arboles(nodoV padre, char* version) {
     if (padre == NULL) return NULL;
 
     int numNuevo = obtenerUltimoNumero((char*)version);
@@ -320,7 +331,7 @@ bool insertar_subversion(nodoV padre,  char* version) {
 void imprimir_versiones_por_nivel(nodoV v, int nivel){
     if (v == NULL) return;
 
-    // indentación
+   
     for(int i = 0; i < nivel; i++)
         cout << '\t';
 
@@ -351,7 +362,7 @@ void renombrar_prefijo_subarbol(nodoV v, const char* viejo, const char* nuevo) {
 
     // Si el nombre del nodo comienza con el prefijo "viejo"
     if (strncmp(v->nombre, viejo, largoViejo) == 0) {
-        const char* resto = v->nombre + largoViejo; // parte que sigue después del prefijo viejo
+        const char* resto = v->nombre + largoViejo; 
 
         // Crear nuevo nombre concatenando el prefijo nuevo + resto
         char* nombreNuevo = (char*)malloc(strlen(nuevo) + strlen(resto) + 1);
@@ -368,23 +379,19 @@ void renombrar_prefijo_subarbol(nodoV v, const char* viejo, const char* nuevo) {
     renombrar_prefijo_subarbol(version_hermano(v), viejo, nuevo);
 }
 
-bool corrimientoHijos(nodoV padre, int k)
-{
+bool corrimientoHijos(nodoV padre, int k){
     nodoV h = version_hijo(padre);
 
     while (h) {
         if (numVersion(h) >= k) {
 
-            int oldNum = numVersion(h);
-            int newNum = oldNum + 1;
+            int antNum = numVersion(h);
+            int numNuevo = antNum + 1;
 
-            // cambiar número
-            h->numero = newNum;
-
-            // renombrar
-            char viejo[64], nuevo[64];
-            sprintf(viejo, "%s.%d", version_nombre(padre), oldNum);
-            sprintf(nuevo, "%s.%d", version_nombre(padre), newNum);
+            h->numero = numNuevo; // cambio numero         
+            char viejo[64], nuevo[64];  // renombramo
+            sprintf(viejo, "%s.%d", version_nombre(padre), antNum);
+            sprintf(nuevo, "%s.%d", version_nombre(padre), numNuevo);
 
             free(h->nombre);
             h->nombre = strdup(nuevo);
@@ -407,8 +414,7 @@ nodoV insertarSubversionNueva(nodoV padre, char* version)
     return insertar_lista_arboles(padre, version);
 }
 
-bool verificarHuecoHermano(nodoV padre, int k)
-{
+bool verificarHuecoHermano(nodoV padre, int k){
     nodoV h = version_hijo(padre);
     nodoV ant = NULL;
 
@@ -417,18 +423,20 @@ bool verificarHuecoHermano(nodoV padre, int k)
         h = version_hermano(h);
     }
 
-    // si ya existe → no es hueco
-    if (h && numVersion(h) == k) return false;
+    // si ya existe no es hueco
+    if (h && numVersion(h) == k) 
+        return false;
 
-    if (ant == NULL && k != 1) return false;
-    if (ant != NULL && numVersion(ant) != k - 1) return false;
+    if (ant == NULL && k != 1) 
+        return false;
+    if (ant != NULL && numVersion(ant) != k - 1) 
+        return false;
 
     return true;
 }
 
-// Patch for corrimientoRaices in versiones.cpp
-bool corrimientoRaices(Archivo &a, char* version)
-{
+
+bool corrimientoRaices(Archivo &a, char* version){
     int k = atoi(version);
     nodoL it = obtener_bosque(a);
 
@@ -448,7 +456,7 @@ bool corrimientoRaices(Archivo &a, char* version)
         it = lista_sig(it);
     }
 
-    // Ensure physical reorder
+  
     reordenar_lista_raices(a);
 
     return true;

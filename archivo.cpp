@@ -11,18 +11,6 @@
 #include <string.h>
 #include <iostream>
 using namespace std;
-/*
-struct nodo_version{
-    nodoV ph;
-    nodoV sh;
-	nodoV padre;
-    char* nombre;
-    int nivel;      //Para la referencia cuando tratemos el nombre como un array de enteros,opcional tho.
-    int numero;
-    texto linea;    //Esto es para el texto d euna version
-    texto historial;
-};
-*/
 
 struct nodo_archivo{
 	char* nombre;
@@ -65,24 +53,22 @@ TipoRet BorrarArchivo(Archivo &a){
 }
 
 
-TipoRet CrearVersion(Archivo &a, char* version, char* error)
-{
+TipoRet CrearVersion(Archivo &a, char* version, char* error){
     if (version == NULL || version[0] == '\0') {
         error = strdup("Versión vacía.");
         return ERROR;
     }
 
-    // Copia defensiva
+    
     char v1[128]; strncpy(v1, version, sizeof(v1)); v1[sizeof(v1)-1] = '\0';
     char v2[128]; strncpy(v2, version, sizeof(v2)); v2[sizeof(v2)-1] = '\0';
 
     bool esRaizVer = esRaiz(v1);
 
-    // → Raíces NO tienen padre
+   
     if (esRaizVer) {
-
-        // ¿Existe raíz igual? → corresponde corrimiento en lista de raíces
-        if (existeRaiz(a, v1)) {
+        
+        if (existeRaiz(a, v1)) {// existe esta raiz?
 
             if (!corrimientoRaices(a, v1)) {
                 error = strdup("No fue posible desplazar raíces.");
@@ -96,7 +82,7 @@ TipoRet CrearVersion(Archivo &a, char* version, char* error)
             }
         }
         else {
-            // Verificar que no haya “hueco” → versión 3 no si falta 2
+            // verificar que no haya version 3 si nos falta  version 2
             if (!padreRaizValido(a, v1)) {
                 error = strdup("No existe raíz anterior.");
                 return ERROR;
@@ -110,19 +96,19 @@ TipoRet CrearVersion(Archivo &a, char* version, char* error)
 
         return OK;
     }
-	// → SUBVERSIÓN
+	// le damo a las subversiones
     nodoV padre = buscarPadre(a, v2);
     if (padre == NULL) {
         error = strdup("El padre no existe.");
         return ERROR;
     }
 
-    // ¿Existe esta subversión?
+    // existe esta subversion?
     nodoV existe = encontrarVersion(a, v1);
 
     int numeroNuevo = obtenerUltimoNumero(v1);
 
-    // Si existe → corrimiento
+    // Si existe empezamos a correr
     if (existe != NULL) {
 
         if (!corrimientoHijos(padre, numeroNuevo)) {
@@ -130,7 +116,7 @@ TipoRet CrearVersion(Archivo &a, char* version, char* error)
             return ERROR;
         }
 
-        // Crear nueva subversión en posición que quedó libre
+        // Crear nueva subversion en posicion que queda libre
         if (insertarSubversionNueva(padre, v2) == NULL) {
             error = strdup("Error al crear nueva subversión.");
             return ERROR;
@@ -139,7 +125,7 @@ TipoRet CrearVersion(Archivo &a, char* version, char* error)
         return OK;
     }
 
-    // No existe → alta normal
+    // si tenemos hueco
     if (!verificarHuecoHermano(padre, numeroNuevo)) {
         error = strdup("Hueco en hermanos.");
         return ERROR;
@@ -178,7 +164,7 @@ TipoRet MostrarVersiones(Archivo a){
         return OK;
     }
 
-    // recorrer raíces del bosque
+    // recorrer raices del bosque
     while (lista != NULL){
         nodoV raiz = get_arbol_version(lista);
         imprimir_versiones_por_nivel(raiz, 0);
