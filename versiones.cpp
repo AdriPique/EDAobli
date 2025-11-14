@@ -32,7 +32,7 @@ nodoV nuevo_nodo_v(){
     v->sh=NULL;
     return v;
 }
-
+//pa crear raices
 nodoV crear_arbol(nodoL l, char* version, int numero){
    nodoV aux = nuevo_nodo_v();
    aux->nivel = 1;
@@ -116,9 +116,11 @@ bool esRaiz(char *version) {
     // Si la version no contiene un punto es raiz
     return (strchr(version, '.') == NULL);
 }
+
 nodoV encontrarVersion (Archivo a, char *version ){
 
-    if (a == NULL || version == NULL) return NULL;
+    if (a == NULL || version == NULL) 
+        return NULL;
 
    
     char copia[64];
@@ -149,7 +151,8 @@ nodoV encontrarVersion (Archivo a, char *version ){
 
    
         v = version_hijo(v);
-        if (v == NULL) return NULL;
+        if (v == NULL)
+            return NULL;
 
       
         while (v != NULL && numVersion(v) != num){ //busca al hermano hasta dar con null o su numero
@@ -273,7 +276,8 @@ bool insertar_subversion(nodoV padre,  char* version) {
 
 
 nodoV insertar_lista_arboles(nodoV padre, char* version) {
-    if (padre == NULL) return NULL;
+    if (padre == NULL) 
+        return NULL;
 
     int numNuevo = obtenerUltimoNumero((char*)version);
 
